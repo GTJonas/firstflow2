@@ -1,0 +1,139 @@
+
+@media (max-width: 360px) {
+    .Mobile--Scroll {
+        padding: 2%;
+        display: flex;
+        background-color: #ffffff;
+        }
+
+    .Profiles {
+        overflow-x: scroll;
+        display: flex;
+        padding-left: 2%;
+        padding-bottom: 4%;
+        width: 100%;
+    }
+
+    .Profile {
+        font-size: 12px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .Profile > div {
+        display:flex;
+        justify-content: center;
+        align-items:center;
+        padding:1%;
+    }
+    .FewUsers {
+        padding: 0% 5%;
+    }
+
+    .FewUsers .Profile > img {
+        border-radius: 100%;
+        width: 61px;
+        max-height: 61px;
+        object-fit: cover;
+
+    }
+
+    .Profile img {
+        border-radius: 100%;
+        width: 41px;
+        max-height: 41px;
+        object-fit: cover;
+    }
+}
+@media (min-width: 361px) and (max-width: 640px) {
+    .Mobile--Scroll {
+
+        padding: 2%;
+        display: flex;
+        background-color: #ffffff;
+
+    }
+
+    .Profiles {
+        overflow-x: auto;
+        display: flex;
+        padding-bottom: 2%;
+        min-width: 100%;
+    }
+
+    .change-class,
+    .Profile {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items:center;
+        font-size: 12px;
+    }
+
+    .Profile > div {
+        display:flex;
+        justify-content: center;
+        align-items:center;
+        padding:1%;
+    }
+    .FewUsers  {
+        justify-content: center !important;
+        font-size: 14px;
+    }
+
+    .FewUsers .Profile > img {
+        border-radius: 100%;
+        width: 71px;
+        max-height: 71px;
+        object-fit: cover;
+
+    }
+
+    .change-class img {
+        border-radius: 100%;
+        object-fit: cover;
+        width: 55px;
+        margin-bottom: 8px;
+    }
+
+    .Profile img {
+        border-radius: 100%;
+        object-fit: cover;
+        width: 61px;
+        max-height: 61px;
+    }
+}
+@media (min-width: 641px) and (max-width: 1024px) {
+    .Mobile--Scroll {
+        padding-top: 2%;
+        width: 100%;
+        background-color: #ffffff;
+        display: flex;
+    }
+    .Profiles {
+        overflow-x: scroll;
+        display: flex;
+        padding-left: 4%;
+        gap:15px;
+        width: 100%;
+    }
+
+    .Profile {
+        font-size: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .Profile img {
+        border-radius: 100%;
+        width: 52px;
+        max-height: 52px;
+        object-fit: cover;
+    }
+}

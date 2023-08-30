@@ -1,0 +1,78 @@
+.icon-dashboard  {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./Dashboard.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.icon-class {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./Class.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.icon-settings {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./Settings.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.icon-logout {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./Logout.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.icon-history{
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./History.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+@media (max-width: 360px) {
+    .icon-hamburgermenu {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background-image: url("./Hamburger-Phone.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+}
+@media (min-width: 361px) and (max-width: 640px) {
+    .icon-hamburgermenu {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background-image: url("./Hamburger-tablet.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+}
+
+.icon-approved  {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./check-circle-fill.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+

@@ -1,0 +1,272 @@
+@media (max-width: 360px) {
+    /* content wrapper */
+    .ContentWrapper {
+        width: 100vw;
+        background-color: #e5e5e5;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* content wrapper size */
+    .Wrapper {
+        margin-top: 15px;
+        width:100%;
+        min-height: 100vh;
+        background-color: #fff;
+    }
+    textarea {
+        width: 80%;
+    }
+
+    textarea {
+        width: 80%;
+        padding: 15px;
+        padding-left: 30px;
+        border-radius: 25px;
+    }
+    .post-Profileimage img {
+        width: 55px;
+        height: 55px;
+        object-fit: cover;
+    }
+    textarea {
+        width:100%;
+    }
+    .post {
+        background-color: #fff;
+        padding: 0.7rem;
+    }
+}
+/* Styles for screens between 361px and 640px wide (larger smartphones and small tablets) */
+@media (min-width: 361px) and (max-width: 640px) {
+    /* content wrapper */
+    .ContentWrapper {
+        width: 100vw;
+        background-color: #e5e5e5;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* content wrapper size */
+    .Wrapper {
+        margin-top: 15px;
+        width:100%;
+        height: 100vh;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+    }
+    .Wrapper ul {
+        display: flex;
+        flex-direction: column;
+        padding: 0 2%;
+
+    }
+    .Wrapper li {
+        list-style: none;
+    }
+
+    /* Merged styles from min-width: 1441px */
+    .Post-Image {
+        max-width: 100%;
+        max-height: 675px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .Post-Image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .Post-ProfileImage img {
+        width: 55px;
+        height: 55px;
+        object-fit: cover;
+        border-radius: 100%;
+    }
+    .post {
+        background-color: #fff;
+    }
+    textarea {
+        width:100%;
+    }
+    .post {
+        background-color: #fff;
+        padding: 0.7rem;
+    }
+
+}
+
+/* Styles for screens between 641px and 1024px wide (small tablets and larger tablets) */
+@media (min-width: 641px) and (max-width: 1024px) {
+    /* content wrapper */
+    .ContentWrapper {
+        flex-grow: 8;
+        min-width: 60vw;
+        background-color: #e5e5e5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* content wrapper size */
+    .Wrapper {
+        margin-top: 15px;
+        width: 95%;
+        min-height: 100vh;
+
+    }
+    textarea {
+        width:100%;
+    }
+    .post {
+        background-color: #fff;
+        padding: 0.6rem;
+    }
+
+}
+
+/* Styles for screens between 1025px and 1440px wide (larger laptops and smaller desktops) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .ContentWrapper {
+        background-color: #e5e5e5;
+        flex-grow: 4;
+
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+    }
+
+    .ContentWrapper::-webkit-scrollbar {
+        width: 0;
+        display: none;
+    }
+
+    /* content wrapper size */
+    .Wrapper {
+        display: flex;
+        flex-direction: column;
+        margin-top: 30px;
+        width: 80%;
+        min-height: 100vh;
+
+    }
+    .Wrapper ul {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .Wrapper li {
+        list-style: none;
+    }
+
+    .Post-Image {
+        max-width: 100%;
+        max-height: 675px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .Post-Image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .Post-ProfileImage img {
+        width: 55px;
+        height: 55px;
+        object-fit: cover;
+        border-radius: 100%;
+    }
+    .post {
+        background-color: #fff;
+        padding: 1.25rem;
+    }
+    textarea {
+        width:100%;
+    }
+}
+
+/* Styles for screens larger than 1440px wide (large desktops and beyond) */
+@media (min-width: 1441px) {
+    .ContentWrapper {
+        background-color: #e5e5e5;
+        flex-grow: 9;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+    }
+
+    .ContentWrapper::-webkit-scrollbar {
+        width: 0;
+        display: none;
+    }
+
+    /* content wrapper size */
+    .Wrapper {
+        display: flex;
+        flex-direction: column;
+        margin-top: 30px;
+        width: 80%;
+        min-height: 100vh;
+        max-height: none;
+
+    }
+    .Wrapper ul {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .Wrapper li {
+        list-style: none;
+    }
+
+    /* Merged styles from min-width: 1441px */
+    .Post-Image {
+        max-width: 100%;
+        max-height: 675px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .Post-Image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .Post-ProfileImage img {
+        width: 55px;
+        height: 55px;
+        object-fit: cover;
+        border-radius: 100%;
+    }
+    .post {
+        background-color: #fff;
+        padding: 1.25rem;
+    }
+    textarea {
+        width:100%;
+    }
+}

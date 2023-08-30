@@ -1,0 +1,32 @@
+.profile  {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./profile.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    background-position: center;
+}
+
+.company-picture  {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./company-picture.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    background-position: center;
+}
+
+.banner  {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-image: url('./banner.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    background-position: center;
+}

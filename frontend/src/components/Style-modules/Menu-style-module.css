@@ -1,0 +1,552 @@
+/* This is only the left Menu navigation sidebar */
+
+/* General Styles */
+:root {
+    --primary-color: #2b3034;
+    --secondary-color: #ffffff;
+    --tertiary-color: #b7b8b9;
+    --background-color: #f1f1f1;
+}
+
+/* General Styles */
+.profilbild-icon,
+#ProfileImage {
+    border-radius: 100%;
+}
+
+.Active {
+    background-color: #55595d;
+}
+
+.LogoutDiv {
+    width: 100%;
+    height: 25%;
+    display: flex;
+    align-items: center;
+}
+
+.Logout {
+    width: 100%;
+    gap: 15px;
+    padding: 5%;
+    border-radius: 15px;
+    display: flex;
+    color: var(--secondary-color);
+    text-decoration: none;
+    align-items: center;
+}
+
+.Logout:hover {
+    background-color: #55595d;
+}
+
+#profile-style,
+.isOnline {
+    margin: 13px;
+    /* Create the gap between the object and the border using box-shadow */
+    box-shadow: 0 0 0 1px #d4d4d4, 0 0 0 5px white, 0 0 0 7px #d4d4d4;
+}
+
+.isOnline {
+    /* Overrides the box-shadow for the .isOnline element */
+    box-shadow: 0 0 0 1px #00d600, 0 0 0 5px white, 0 0 0 7px #00d600 !important;
+}
+
+/* This hides the topsidebar that show only on MD screens Resolution:641px to 1024px */
+.md-Scroll {
+    display: none;
+}
+
+/* Shared styles for .Desktop and .Menuicon img */
+.Desktop {
+    display: none;
+}
+.Mobile {
+    display: none;
+}
+.Menuicon img {
+    width: 100%;
+}
+
+/* Mobile Styles */
+/* Styles for screens up to 360px wide (small smartphones) */
+@media (max-width: 360px) {
+    .main {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .Mobile {
+        display: block;
+        margin: 0;
+        padding: 0;
+    }
+
+    .Mobile--top {
+        display: flex;
+
+        background-color: #ffffff;
+        width: 100vw;
+        height: 10vh;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 2em;
+    }
+
+    .Mobile--top .logo {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        padding-left: 3%;
+    }
+
+    .Mobile--top .logo img {
+        width: 90%;
+    }
+
+    .Mobile--menu {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+        padding-right: 7%;
+    }
+
+    .Menuicon {
+        display: flex;
+        justify-content: center;
+        padding: 5px;
+        background-color: #f1f1f1;
+        border-radius: 100%;
+        width: 30%;
+        height: 30%;
+    }
+
+
+}
+
+/* Styles for screens between 361px and 640px wide (larger smartphones and small tablets) */
+@media (min-width: 361px) and (max-width: 640px) {
+    /* Remove repetitive .Desktop and .Menuicon img styles, as they are shared */
+    .main {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .Mobile {
+        display: block;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .Mobile--top {
+        display: flex;
+        background-color: #ffffff;
+        width: 100vw;
+        height: 10vh;
+        justify-content: center;
+        align-items: center;
+        padding-top: 2em;
+    }
+
+    .Mobile--top .logo {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        padding-left: 3%;
+    }
+
+    .Mobile--top .logo img {
+        width: 90%;
+    }
+
+    .Mobile--menu {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+        padding-right: 7%;
+    }
+
+    .Menuicon {
+        display: flex;
+        justify-content: center;
+        padding: 5px;
+        background-color: #f1f1f1;
+        border-radius: 100%;
+        width: 20%;
+        height: 20%;
+    }
+
+
+}
+
+/* PC styles */
+/* Styles for screens between 641px and 1024px wide (tablets and smaller laptops) */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .main {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .Desktop {
+        height: 100vh;
+        display: flex;
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        flex-direction: column;
+        min-width: 20vw;
+        flex-grow: 2;
+        height: 100vh;
+    }
+    .ProfileImage img {
+        width: 65px;
+        height: 65px;
+        border-radius: 100%;
+        object-fit: cover;
+        margin-top: 4vh;
+        margin-left: 3%;
+        background-color: gray;
+        background-image: url("../../assets/default.png");
+    }
+
+    .profileContainer {
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        height: 25%;
+        padding-left: 5%;
+        gap: 5px;
+    }
+
+    .smallText {
+        margin-top: 20px;
+        color: var(--tertiary-color);
+        font-size: 16px;
+    }
+
+    .Desktop nav {
+        display: flex;
+        height: 50%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .Desktop nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        width: 90%;
+    }
+
+    .Desktop nav li {
+        margin-top: 0.5em;
+    }
+
+    .Desktop nav a {
+        gap: 6px;
+        padding: 6.5%;
+        border-radius: 5px 0 0 5px;
+        color: var(--secondary-color);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .Desktop nav a:hover {
+        transition: ease-in-out 100ms;
+        background-color: #55595d;
+    }
+
+    .Desktop nav img {
+        margin-right: 1em;
+        width: 28px;
+    }
+
+    .md-Scroll {
+        display: none;
+    }
+
+    .Profiles {
+        overflow-x: auto;
+        display: flex;
+        padding-left: 4%;
+        padding-bottom: 3%;
+        min-width: 100%;
+    }
+
+    .profile {
+        font-size: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .profile img {
+        border-radius: 100%;
+        width: 61px;
+        max-height: 61px;
+        object-fit: cover;
+    }
+    .LogoutDiv {
+        width: 100%;
+        height: 25%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .Logout {
+        width: 80%;
+        gap: 15px;
+        padding: 5%;
+        border-radius: 15px;
+        display: flex;
+        color: var(--secondary-color);
+        text-decoration: none;
+        align-items: center;
+    }
+
+}
+
+/* Styles for screens between 1025px and 1440px wide (larger laptops and smaller desktops) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+
+    .Desktop {
+        height: 100vh;
+        display: flex;
+    }
+
+    .Desktop {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        flex-direction: column;
+        min-width: 18vw;
+        flex-grow: 1;
+        height: 100vh;
+    }
+
+    .ProfileImage img {
+        width: 80px;
+        height: 80px;
+        border-radius: 100%;
+        object-fit: cover;
+        margin-top: 4vh;
+        background-color: gray;
+        background-image: url("../../assets/default.png");
+    }
+
+    .profileContainer {
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        height: 25%;
+        padding-left: 15%;
+        gap: 5px;
+    }
+
+    .smallText {
+        color: var(--tertiary-color);
+        font-size: 16px;
+    }
+
+    .Desktop nav {
+        display: flex;
+        height: 50%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        justify-content: flex-end;
+    }
+
+    .Desktop nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        width: 90%;
+    }
+
+    .Desktop nav li {
+        margin-top: 0.5em;
+    }
+
+    .Desktop nav a {
+        gap: 6px;
+        padding: 6.5%;
+        border-radius: 5px 0 0 5px;
+        color: var(--secondary-color);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .Desktop nav a:hover {
+        transition: ease-in-out 100ms;
+        background-color: #55595d;
+    }
+
+    .Desktop nav img {
+        margin-right: 1em;
+        width: 28px;
+    }
+
+    .md-Scroll {
+        display: none;
+    }
+
+    .Profiles {
+        overflow-x: auto;
+        display: flex;
+        padding-left: 4%;
+        padding-bottom: 3%;
+        min-width: 100%;
+    }
+
+    .profile {
+        font-size: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .profile img {
+        border-radius: 100%;
+        width: 61px;
+        max-height: 61px;
+        object-fit: cover;
+    }
+    .LogoutDiv {
+        padding-left: 15%;
+    }
+}
+
+/* Styles for screens larger than 1440px wide (large desktops and beyond) */
+@media (min-width: 1441px) {
+    .main {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .Desktop {
+        height: 100vh;
+        display: flex;
+    }
+
+    .Desktop {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        flex-direction: column;
+        min-width: 18vw;
+        flex-grow: 1;
+        height: 100vh;
+    }
+
+    .ProfileImage img {
+        width: 80px;
+        height: 80px;
+        border-radius: 100%;
+        object-fit: cover;
+        margin-top: 4vh;
+        background-color: gray;
+        background-image: url("../../assets/default.png");
+    }
+
+    .profileContainer {
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        height: 25%;
+        padding-left: 15%;
+        gap: 5px;
+    }
+
+    .smallText {
+        color: var(--tertiary-color);
+        font-size: 16px;
+    }
+
+    .Desktop nav {
+        display: flex;
+        height: 50%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        justify-content: flex-end;
+    }
+
+    .Desktop nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        width: 90%;
+    }
+
+    .Desktop nav li {
+        margin-top: 0.5em;
+    }
+
+    .Desktop nav a {
+        gap: 6px;
+        padding: 6.5%;
+        border-radius: 5px 0 0 5px;
+        color: var(--secondary-color);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .Desktop nav a:hover {
+        transition: ease-in-out 100ms;
+        background-color: #55595d;
+    }
+
+    .Desktop nav img {
+        margin-right: 1em;
+        width: 28px;
+    }
+
+    .md-Scroll {
+        display: none;
+    }
+
+    .Profiles {
+        overflow-x: auto;
+        display: flex;
+        padding-left: 4%;
+        padding-bottom: 3%;
+        min-width: 100%;
+    }
+
+    .profile {
+        font-size: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .profile img {
+        border-radius: 100%;
+        width: 61px;
+        max-height: 61px;
+        object-fit: cover;
+    }
+    .LogoutDiv {
+        padding-left: 15%;
+    }
+}
