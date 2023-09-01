@@ -206,20 +206,21 @@ class CompanyController extends Controller
         }
     }
 
-    public function searchCompany(Request $request)
+    public function searchCompanies(Request $request)
     {
-        $searchQuery = $request->query('search');
-        $companies = Company::where('name', 'like', '%' . $searchQuery . '%')->get();
-
-        $url = 'http://192.168.1.78:8080/company/';
-
+        // Get the search query from the request
+        $query = $request->input('query');
+    
+        // Perform the search logic here
+        $companies = Company::where('name', 'like', '%' . $query . '%')->get();
+    
         // Retrieve supervisor information for each company
         $companiesWithSupervisors = [];
         foreach ($companies as $company) {
             $supervisor = User::where('company_uuid', $company->uuid)
                 ->where('role_id', 2) // Filter by supervisor role ID
                 ->first();
-
+    
             $supervisorData = null;
             if ($supervisor) {
                 $supervisorData = [
@@ -230,19 +231,17 @@ class CompanyController extends Controller
                     'phoneNumber' => $supervisor->phone_number,
                 ];
             }
-
+    
             $companiesWithSupervisors[] = [
                 'company' => $company,
                 'supervisor' => $supervisorData,
-                'url' => $url . $company->uuid, // Add the URL here
+                'url' => '$url' . $company->uuid, // Add the URL here
             ];
         }
-
-        return response()->json([
-            'companies' => $companiesWithSupervisors,
-        ]);
+    
+        // Return the results with supervisor information as JSON
+        return response()->json(['companies' => $companiesWithSupervisors]);
     }
-
 
     public function favoriteCompany($companyId)
     {

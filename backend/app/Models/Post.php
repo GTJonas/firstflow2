@@ -13,8 +13,7 @@ class Post extends Model
         '/api/*',
     ];
 
-
-    protected $fillable = ['content', 'image', 'user_uuid', 'status', 'handled_by', 'from', 'to'];
+protected $fillable = ['content', 'image', 'user_uuid', 'status', 'handled_by', 'from', 'to', 'processing_history_id'];
 
     public function user()
     {
@@ -29,6 +28,12 @@ class Post extends Model
     protected $casts = [
         'status' => 'string',
     ];
+
+    public function processingHistory()
+    {
+        return $this->hasOne(ProcessingHistory::class, 'post_id', 'uuid');
+    }
+
 
 }
 

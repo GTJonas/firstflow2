@@ -4,77 +4,93 @@ import jwtDecode from "jwt-decode";
 import CryptoJS from "crypto-js";
 import getAuthHeaders from "./getAuthHeaders";
 
-export const useFetchData1 = (url: string, headers = {}) => {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState<Error | null>(null); // Specify the type as Error | null
-  const [isFetched, setIsFetched] = useState(false);
+// Fetch the API URLs from config.json
+const fetchApiUrls = async () => {
+  try {
+    const response = await fetch("/config.json"); // Adjust the path if needed
+    const config = await response.json();
+    return config.apis.map((api) => `${config.apiBaseUrl}${api.path}`);
+  } catch (error) {
+    console.error("Error fetching API URLs:", error);
+    throw error;
+  }
+};
+
+export const useFetchData1 = (
+  apiIndex,
+  method,
+  requestData = null,
+  headers = {}
+) => {
+  const [fetchedData, setFetchedData] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(url, { headers });
-        setData(response.data);
-        console.log(data);
+        setIsFetching(true);
+        const apiUrls = await fetchApiUrls();
+        const url = apiUrls[apiIndex];
+        const response = await axios({
+          method,
+          url,
+          data: requestData,
+          headers,
+        });
+        setFetchedData(response.data);
       } catch (error) {
-        console.error("Error setting user data:", error);
-        setError(error as Error); // Cast 'error' to Error type
+        console.error("Error fetching data:", error);
+        setError(error as Error);
       } finally {
-        setIsFetched(true);
+        setIsFetching(false);
       }
     };
 
-    if (!isFetched) {
-      fetchData();
-    }
-  }, [url, headers, isFetched]);
+    fetchData();
+  }, [apiIndex, method, requestData, headers]);
 
-  return { data, error };
+  return { fetchedData, error, isFetching };
 };
 
 export const useLogin = (
-  url: string,
-  credentials: { remember: boolean; password: string; email: string }
+  apiIndex: string,
+  method: string, // Add the method parameter
+  requestData = null,
+  headers = {}
 ) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const login = async () => {
+  const loginUser = async () => {
+    setIsLoggingIn(true);
+
     try {
-      const response = await axios.post(url, credentials);
+      const apiUrls = await fetchApiUrls();
+      const url = apiUrls[apiIndex];
+
+      if (!url) {
+        throw new Error(`API URL "${url}" not found`);
+      }
+
+      const response = await axios({
+        method, // Use the provided HTTP method
+        url: url,
+        data: requestData,
+        headers,
+      });
 
       if (response.status === 200) {
-        const token = response.data.token; // Assuming your response structure contains the token
-
-        // Store the token in localStorage
+        const token = response.data.token;
         localStorage.setItem("token", token);
 
-        // Define an interface to describe the structure of the decoded token
-        interface DecodedToken {
-          sub: string;
-          // Other properties you expect in the decoded token
-          // For example: iss, exp, iat, etc.
-        }
+        const { success, error } = await fetchAndProcessUserData(token);
 
-        // Decode the token to access user data
-        const decodedToken = jwtDecode(token) as DecodedToken;
-        const userUuid = decodedToken.sub;
-
-        // Fetch user data using the UUID
-        try {
-          const userResponse = await axios.get(
-            `http://192.168.1.78:8000/api/get-user-by-uuid/${userUuid}`
-          ); // Replace with your API endpoint
-          const user = userResponse.data;
-          // Encrypt and store user data in localStorage
-          const encryptedUserData = encryptData(JSON.stringify(user));
-          localStorage.setItem("userData", encryptedUserData);
-
-          // Set the token in Axios headers for future requests
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        if (success) {
           setIsLoggedIn(true);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          setLoginError("An error occurred during login");
+        } else {
+          setLoginError(error);
         }
       } else {
         setLoginError("Invalid credentials");
@@ -82,10 +98,35 @@ export const useLogin = (
     } catch (error) {
       console.error("Login error:", error);
       setLoginError("An error occurred during login");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
-  return { isLoggedIn, loginError, login };
+  return { isLoggedIn, loginError, isLoggingIn, loginUser };
+};
+
+const fetchAndProcessUserData = async (token) => {
+  try {
+    const decodedToken = jwtDecode(token) as DecodedToken;
+    const userUuid = decodedToken.sub;
+
+    const apiUrls = await fetchApiUrls();
+    const url = apiUrls[2];
+
+    const userResponse = await axios.get(`${url}/${userUuid}`);
+
+    const user = userResponse.data;
+    const encryptedUserData = encryptData(JSON.stringify(user));
+    localStorage.setItem("userData", encryptedUserData);
+
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return { success: false, error: "An error occurred during login" };
+  }
 };
 
 export const updateUserProfile = async (formData) => {

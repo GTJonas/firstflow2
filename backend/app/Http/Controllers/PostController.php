@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SchoolClass;
 use App\Models\User;
 use App\Models\Company;
+use App\Models\ProcessingHistory;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
@@ -133,35 +134,52 @@ class PostController extends Controller
         }
     }
 
-    public function acceptPost($postId)
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
+public function acceptPost($postId)
+{
+    try {
+        $user = JWTAuth::parseToken()->authenticate();
 
-            $post = Post::findOrFail($postId);
-            $post->update(['status' => 'approved', 'handled_by' => $user->uuid]);
+        $post = Post::findOrFail($postId);
+        $post->update(['status' => 'approved', 'handled_by' => $user->uuid]);
 
-            return response()->json(['message' => 'Post accepted']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to accept post'], 500);
-        }
+        // Add a record to the processing history
+        ProcessingHistory::create([
+            'post_id' => $post->uuid,
+            'supervisor_id' => $user->uuid,
+            'processing_date' => now(), // Or use the appropriate date
+            'feedback' => 'placeholder', // Optional feedback
+            'status' => 'approved', // Status
+        ]);
+
+        return response()->json(['message' => 'Post accepted']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Failed to accept post'], 500);
     }
+}
 
-    // Controller method to decline a post
-    public function declinePost($postId)
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
+// Controller method to decline a post
+public function declinePost($postId)
+{
+    try {
+        $user = JWTAuth::parseToken()->authenticate();
 
-            $post = Post::findOrFail($postId);
-            $post->status = 'rejected';
-            $post->update(['status' => 'rejected', 'handled_by' => $user->uuid]);
+        $post = Post::findOrFail($postId);
+        $post->update(['status' => 'rejected', 'handled_by' => $user->uuid]);
 
-            return response()->json(['message' => 'Post declined']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to decline post'], 500);
-        }
+        // Add a record to the processing history
+        ProcessingHistory::create([
+            'post_id' => $post->uuid,
+            'supervisor_id' => $user->uuid,
+            'processing_date' => now(), // Or use the appropriate date
+            'feedback' => 'placeholder', // Optional feedback
+            'status' => 'rejected', // Status
+        ]);
+
+        return response()->json(['message' => 'Post declined']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Failed to decline post'], 500);
     }
+}
 
 // not used?
 /*    public function getTeacherCompanyPosts(Request $request)
@@ -278,4 +296,89 @@ class PostController extends Controller
             return response()->json(['error' => 'Failed to authenticate.'], 401);
         }
     }
+
+   public function getAttendance(Request $request)
+    {
+        try {
+            // Get the class IDs from the request
+            $classIds = $request->input('class_ids', []); // Assuming you pass class IDs as an array in the request
+
+            // Get the time frame from the request (e.g., 'month', 'week', or 'day')
+            $timeFrame = $request->input('time_frame', 'day');
+
+            // Get the current date and time
+            $currentDateTime = now();
+
+            // Calculate the start date based on the selected time frame
+            $startDate = match ($timeFrame) {
+                'month' => $currentDateTime->startOfMonth(),
+                'week' => $currentDateTime->startOfWeek(),
+                default => $currentDateTime->startOfDay(),
+            };
+
+            // Calculate the end date as the current date and time
+            $endDate = $currentDateTime;
+
+            // Fetch attendance data for selected classes and time frame
+            $attendanceData = [];
+
+            // Loop through class IDs
+            foreach ($classIds as $classId) {
+                // Fetch attendance data for each class and add it to $attendanceData
+                $classAttendance = $this->getAttendanceForClass($classId, $startDate, $endDate);
+
+                if (!empty($classAttendance)) {
+                    $attendanceData[] = $classAttendance;
+                }
+            }
+
+            return response()->json(['attendance' => $attendanceData]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to retrieve attendance'], 500);
+        }
+    }
+
+    // Function to retrieve attendance data for a specific class
+    private function getAttendanceForClass($classId, $startDate, $endDate)
+{
+    try {
+        // Fetch all posts for the specified class within the date range
+        $posts = Post::where('class_id', $classId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        // Initialize an array to store attendance data
+        $attendance = [];
+
+        foreach ($posts as $post) {
+            // You might want to add additional conditions to determine attendance
+            // For example, check the post's status or processing history
+
+            // Assuming 'status' is 'approved' and there is a 'processing_date' in history
+            if ($post->status === 'approved' && $post->processingHistory) {
+                $attendance[] = [
+                    'date' => $post->processingHistory->processing_date->toDateString(),
+                    'status' => 'Present', // You can customize this based on your logic
+                    'uuid' => $post->processingHistory->uuid,
+                ];
+            } else {
+                $attendance[] = [
+                    'date' => $post->created_at->toDateString(),
+                    'status' => 'Absent', // You can customize this based on your logic
+                ];
+            }
+        }
+
+        return [
+            'class_id' => $classId,
+            'attendance' => $attendance,
+        ];
+    } catch (\Exception $e) {
+        return [
+            'class_id' => $classId,
+            'attendance' => [], // Return an empty array in case of an exception
+        ];
+    }
+}
+        
 }

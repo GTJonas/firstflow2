@@ -1,23 +1,21 @@
-
 .CompanyHeader {
-    width: 100%;
+  width: 100%;
 }
 .Banner {
-    width: 100%;
-    object-fit: cover;
-    object-position: top;
-    height: 40vh;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  height: 40vh;
 }
 .Companylogo {
-    height:100px;
-    width: 100px;
-    object-fit: cover;
-    border-radius: 100%;
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  border-radius: 100%;
 }
 .Student img {
-    width: 100px;
-    height:100px;
-    object-fit: center;
-    border-radius: 100%;
-
+  width: 100px;
+  height: 100px;
+  object-fit: center;
+  border-radius: 100%;
 }

@@ -43,11 +43,11 @@ Route::get('/filtered-posts', [PostController::class, 'getFilteredPosts']);
 Route::get('/getClasses', [PostController::class, 'getClasses']);
 Route::get('/getUsersForClass/{classId}', [PostController::class, 'getUsersForClass']);
 
-// Route to accept a post
-Route::post('posts/{postId}/accept', [PostController::class, 'acceptPost']);
 
-// Route to decline a post
+// Route for Attendance
+Route::post('posts/{postId}/accept', [PostController::class, 'acceptPost']);
 Route::post('posts/{postId}/decline', [PostController::class, 'declinePost']);
+Route::get('getAttendanceHistory', [PostController::class, 'getAttendanceHistory']);
 
 
 //Class
@@ -67,7 +67,7 @@ Route::post('/company/edit/{uuid}', [CompanyController::class, 'editCompanyProfi
 Route::get('/company/show/{uuid}', [CompanyController::class, 'showCompanyProfile']);
 Route::get('/company/own-profile', [CompanyController::class, 'redirectOwnCompanyProfile']);
 Route::get('/company/all/show', [CompanyController::class, 'showAllCompanyProfiles']);
-Route::get('/search-company', [CompanyController::class, 'searchCompany']);
+Route::get('/search-companies', [CompanyController::class, 'searchCompanies']);
 
 Route::post('/favorite-company/{companyId}', [CompanyController::class, 'favoriteCompany']);
 Route::post('/remove-favorite-company/{companyId}', [CompanyController::class, 'removeFavoriteCompany']);

@@ -1,0 +1,25 @@
+{
+  "apiBaseUrl": "http://localhost:8000",
+  "apis": [
+    {
+      "path": "/api/protected",
+      "description": "Allows Access to protected resources."
+    },
+    {
+      "path": "/api/login",
+      "description": "User login endpoint."
+    },
+    {
+      "path": "/api/get-user-by-uuid",
+      "description": ""
+    },
+    {
+      "path": "/api/",
+      "description": "Placeholder API."
+    },
+    {
+      "path": "/api/",
+      "description": "Placeholder API."
+    }
+  ]
+}

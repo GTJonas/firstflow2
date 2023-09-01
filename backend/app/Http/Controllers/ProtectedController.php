@@ -31,6 +31,7 @@ class ProtectedController extends Controller
                 'profilePicture' => $user->profile_picture,
                 'schoolId' => $user->school_id,
                 'classId' => $user->class_id,
+                'companyUuid' => $user->company_uuid,
                 // Add more user data fields as needed
             ];
 
