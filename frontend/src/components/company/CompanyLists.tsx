@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import getAuthHeaders from "../../api/getAuthHeaders.tsx";
 
-const API_URL = "http://192.168.1.78:8000";
+const API_URL = "http://5.152.153.222:8000";
 
 function CompanyLists() {
   const [searchQuery, setSearchQuery] = useState("");
   const [companies, setCompanies] = useState([]);
+  const [favoriteCompanies, setFavoriteCompanies] = useState([]);
 
   const fetchCompanies = async (query) => {
     try {
@@ -24,16 +24,21 @@ function CompanyLists() {
     }
   };
 
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
   const favoriteCompany = async (companyId) => {
     try {
       const response = await axios.post(
         `${API_URL}/api/favorite-company/${companyId}`,
         {},
-        getAuthHeaders()
+        { headers }
       );
-      console.log(response.data.message);
-      // Refresh the list of companies after favoriting
-      fetchCompanies(searchQuery);
+      // Handle the response data in the .then block
+      responseHandler(response);
     } catch (error) {
       console.error("Error favoriting company:", error);
     }
@@ -44,13 +49,33 @@ function CompanyLists() {
       const response = await axios.post(
         `${API_URL}/api/remove-favorite-company/${companyId}`,
         {},
-        getAuthHeaders()
+        { headers }
       );
-      console.log(response.data.message);
-      // Refresh the list of companies after removing from favorites
-      fetchCompanies(searchQuery);
+      // Handle the response data in the .then block
+      responseHandler(response);
     } catch (error) {
       console.error("Error removing favorite company:", error);
+    }
+  };
+
+  // Create a separate function to handle the response
+  const responseHandler = (response) => {
+    console.log("Response:", response);
+    console.log(response.data.message);
+    // Refresh the list of companies after removing from favorites
+    fetchCompanies(searchQuery);
+    // Refresh the list of favorite companies
+    fetchFavoriteCompanies();
+  };
+
+  const fetchFavoriteCompanies = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/favorite-companies`, {
+        headers,
+      });
+      setFavoriteCompanies(response.data.favoriteCompanies);
+    } catch (error) {
+      console.error("Error fetching favorite companies:", error);
     }
   };
 

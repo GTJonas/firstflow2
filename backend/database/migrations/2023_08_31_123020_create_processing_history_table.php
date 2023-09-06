@@ -10,6 +10,7 @@ class CreateProcessingHistoryTable extends Migration
     {
         Schema::create('processing_history', function (Blueprint $table) {
             $table->id();
+            $table->uuid('user_id');
             $table->uuid('post_id');
             $table->uuid('supervisor_id');
             $table->date('processing_date');
@@ -18,9 +19,10 @@ class CreateProcessingHistoryTable extends Migration
 
             $table->timestamps();
 
-            // Define foreign keys
+            // Define foreign keys->onDelete('cascade');
             $table->foreign('post_id')->references('uuid')->on('posts')->onDelete('cascade');
             $table->foreign('supervisor_id')->references('uuid')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('uuid')->on('users')->onDelete('cascade');
         });
     }
 

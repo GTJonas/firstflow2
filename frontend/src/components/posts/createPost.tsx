@@ -52,7 +52,7 @@ const CreatePost = () => {
 
     // Send the request to create the post with authentication headers
     axios
-      .post("http://192.168.1.78:8000/api/store-post", formData, {
+      .post("http://194.71.0.30:8000/api/store-post", formData, {
         headers: {
           ...authHeaders,
           "Content-Type": "multipart/form-data", // Important for image upload

@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import getAuthHeaders from "../../api/getAuthHeaders";
+import DoughnutChart from "../../Charts/UserattendanceChart";
 
 const Stats = () => {
   const [classData, setClassData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [Approvedusers, setApprovedusers] = useState(0);
+  const [Rejectedusers, setRejectedusers] = useState(0);
+  const [Pendingusers, setPendingusers] = useState(0);
+  const [Totalstudents, setTotalstudents] = useState(0);
 
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  // State to hold the selected class
+  const [classSelector, setClassSelector] = useState(""); // Initialize with an empty string
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.1.78:8000/api/show-own-class",
+          "http://194.71.0.30:8000/api/getAttendanceStatus",
+          {
+            desiredDate,
+            classSelector, // Include the classSelector in the request body
+          },
           {
             headers: {
               ...getAuthHeaders(),
@@ -23,86 +32,68 @@ const Stats = () => {
 
         setClassData(response.data);
         setIsLoading(false);
+        setApprovedusers(response.data.approved.length);
+        setRejectedusers(response.data.rejected.length);
+        setPendingusers(response.data.pending.length);
+        setTotalstudents(response.data.studentCount);
+
+        // Log the value of Approvedusers here
+        console.log(Approvedusers);
       } catch (error) {
         console.error("Error fetching data:", error);
         setIsLoading(false);
       }
     };
 
+    console.log(classData);
+
     fetchData();
-  }, []);
+  }, [classSelector]);
 
-  useEffect(() => {
-    const fetchAttendanceData = async () => {
-      if (classData) {
-        try {
-          // Iterate through the students in the class data and fetch their attendance data
-          const studentAttendancePromises = classData.classes[0].students.map(
-            async (student) => {
-              const response = await axios.get(
-                `http://192.168.1.78:8000/api/getAttendanceHistory?user_uuid=${student.uuid}`,
-                {
-                  headers: {
-                    ...getAuthHeaders(),
-                  },
-                }
-              );
-
-              return {
-                student,
-                attendance: response.data.attendance,
-              };
-            }
-          );
-
-          // Wait for all attendance requests to complete
-          const studentAttendanceData = await Promise.all(
-            studentAttendancePromises
-          );
-
-          setAttendanceData(studentAttendanceData);
-          setDataLoaded(true);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      }
-    };
-
-    fetchAttendanceData();
-  }, [classData]);
-
+  // Handler function for class selector change
+  const handleClassSelectorChange = (event) => {
+    setClassSelector(event.target.value); // Update the classSelector state when the user selects a class
+  };
   return (
     <div>
-      {isLoading ? (
-        <p>Loading data...</p>
-      ) : (
-        <div>
-          <h1>Class Information</h1>
-          <p>Display class information here.</p>
+      <div>
+        <h1>Student Attendance</h1>
+        {isLoading ? (
+          <p>Loading attendance data...</p>
+        ) : (
+          <>
+            <select value={classSelector} onChange={handleClassSelectorChange}>
+              <option value="">Select a Class</option>
+              {classData.map((classItem) => (
+                <option key={classItem.id} value={classItem.class_selector}>
+                  {classItem.class_name}
+                </option>
+              ))}
+            </select>
 
-          <h1>Student Attendance</h1>
-          {dataLoaded ? (
-            attendanceData.map((studentAttendance) => (
-              <div key={studentAttendance.student.uuid}>
-                <h2>
-                  {studentAttendance.student.first_name}{" "}
-                  {studentAttendance.student.last_name}
-                </h2>
-                {/* Render attendance data for the student here */}
-                <ul>
-                  {studentAttendance.attendance.map((item, index) => (
-                    <li key={index}>
-                      Date: {item.date}, Status: {item.status}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            <p>Loading attendance data...</p>
-          )}
-        </div>
-      )}
+            <div>
+              <DoughnutChart
+                approved={Approvedusers}
+                rejected={Rejectedusers}
+                pending={Pendingusers}
+              />
+            </div>
+
+            <h2>
+              Approved: {Approvedusers} / {Totalstudents - Rejectedusers}
+            </h2>
+            <h2>
+              Rejected: {Rejectedusers} / {Totalstudents - Approvedusers}
+            </h2>
+
+            {Pendingusers !== 0 && (
+              <h2>
+                Pending: {Pendingusers} / {Totalstudents}
+              </h2>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

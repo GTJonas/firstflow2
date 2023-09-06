@@ -47,7 +47,7 @@ Route::get('/getUsersForClass/{classId}', [PostController::class, 'getUsersForCl
 // Route for Attendance
 Route::post('posts/{postId}/accept', [PostController::class, 'acceptPost']);
 Route::post('posts/{postId}/decline', [PostController::class, 'declinePost']);
-Route::get('getAttendanceHistory', [PostController::class, 'getAttendanceHistory']);
+Route::get('/getAttendanceStatus', [PostController::class, 'getAttendanceStatus']);
 
 
 //Class
@@ -69,6 +69,7 @@ Route::get('/company/own-profile', [CompanyController::class, 'redirectOwnCompan
 Route::get('/company/all/show', [CompanyController::class, 'showAllCompanyProfiles']);
 Route::get('/search-companies', [CompanyController::class, 'searchCompanies']);
 
+Route::get('/favorite-companies', [CompanyController::class, 'index']);
 Route::post('/favorite-company/{companyId}', [CompanyController::class, 'favoriteCompany']);
 Route::post('/remove-favorite-company/{companyId}', [CompanyController::class, 'removeFavoriteCompany']);
 

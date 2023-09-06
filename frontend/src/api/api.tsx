@@ -133,19 +133,19 @@ export const updateUserProfile = async (formData) => {
   const token = localStorage.getItem("token");
   const userUuid = jwtDecode(token).sub;
 
+  const apiUrls = await fetchApiUrls();
+
   try {
+    const url = apiUrls[3];
     // Update user profile on the server
-    const response = await axios.post(
-      `http://192.168.1.78:8000/api/update-user-profile`,
-      formData,
-      { headers: getAuthHeaders() }
-    );
+    const response = await axios.post(`${url}`, formData, {
+      headers: getAuthHeaders(),
+    });
 
     if (response.status === 200) {
+      const url = apiUrls[2];
       // Fetch updated user data
-      const userResponse = await axios.get(
-        `http://192.168.1.78:8000/api/get-user-by-uuid/${userUuid}`
-      );
+      const userResponse = await axios.get(`${url}/${userUuid}`);
       const updatedUser = userResponse.data;
 
       // Update encrypted user data in localStorage
@@ -159,6 +159,20 @@ export const updateUserProfile = async (formData) => {
   } catch (error) {
     console.error("Error updating user profile:", error);
     return { success: false, error: "An error occurred during profile update" };
+  }
+};
+
+const userByRoles = async () => {
+  const apiUrls = await fetchApiUrls();
+  const url = apiUrls[4];
+
+  try {
+    const response = await axios.get(`${url}`, {
+      headers: getAuthHeaders(), // Assuming getAuthHeaders() is defined and returns the Authorization header.
+    });
+    return response.data; // Make sure to return the data from the response.
+  } catch (error) {
+    throw error; // Rethrow the error to handle it in the Dashboard component.
   }
 };
 

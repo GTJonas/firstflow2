@@ -1,19 +1,23 @@
-import axios from 'axios';
-import getAuthHeaders from './getAuthHeaders.tsx';
+import axios from "axios";
+import getAuthHeaders from "./getAuthHeaders.tsx";
 
-const API_URL = 'http://192.168.1.78:8000';
+const API_URL = "http://5.152.153.222:8000";
 
 const createClass = async (classData) => {
-    try {
-        const response = await axios.post(`${API_URL}/api/create-class`, classData, {
-            headers: {
-                ...getAuthHeaders(), // Assuming getAuthHeaders() returns the Authorization header.
-            },
-        });
-        return response.data; // Make sure to return the data from the response.
-    } catch (error) {
-        throw error; // Rethrow the error to handle it in the Dashboard component.
-    }
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/create-class`,
+      classData,
+      {
+        headers: {
+          ...getAuthHeaders(), // Assuming getAuthHeaders() returns the Authorization header.
+        },
+      }
+    );
+    return response.data; // Make sure to return the data from the response.
+  } catch (error) {
+    throw error; // Rethrow the error to handle it in the Dashboard component.
+  }
 };
 
 export default createClass;

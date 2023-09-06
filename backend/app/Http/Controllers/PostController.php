@@ -55,7 +55,7 @@ class PostController extends Controller
                         ->save(public_path('storage/' . $imagePath)); // Save the resized image*/
                 }
 
-                $url = 'http://192.168.1.78:8000/storage/';
+                $url = 'http://194.71.0.30:8000/storage/';
 
                 $post->content = $request->input('content');
                 $post->user_uuid = $user->uuid;
@@ -146,6 +146,7 @@ public function acceptPost($postId)
         ProcessingHistory::create([
             'post_id' => $post->uuid,
             'supervisor_id' => $user->uuid,
+            'user_id' => $post->user_uuid,
             'processing_date' => now(), // Or use the appropriate date
             'feedback' => 'placeholder', // Optional feedback
             'status' => 'approved', // Status
@@ -170,6 +171,7 @@ public function declinePost($postId)
         ProcessingHistory::create([
             'post_id' => $post->uuid,
             'supervisor_id' => $user->uuid,
+            'user_id' => $post->user_uuid,
             'processing_date' => now(), // Or use the appropriate date
             'feedback' => 'placeholder', // Optional feedback
             'status' => 'rejected', // Status
@@ -297,88 +299,103 @@ public function declinePost($postId)
         }
     }
 
-   public function getAttendance(Request $request)
-    {
-        try {
-            // Get the class IDs from the request
-            $classIds = $request->input('class_ids', []); // Assuming you pass class IDs as an array in the request
+function getAttendanceStatus(Request $request)
+{
+    // paramaters
+    $user = JWTAuth::parseToken()->authenticate();
+    $desiredDate = $request->input('desiredDate'); // Get the desired date from the request
+    $classSelector = $request->input('classSelector'); // Get the class selector from the request
 
-            // Get the time frame from the request (e.g., 'month', 'week', or 'day')
-            $timeFrame = $request->input('time_frame', 'day');
 
-            // Get the current date and time
-            $currentDateTime = now();
 
-            // Calculate the start date based on the selected time frame
-            $startDate = match ($timeFrame) {
-                'month' => $currentDateTime->startOfMonth(),
-                'week' => $currentDateTime->startOfWeek(),
-                default => $currentDateTime->startOfDay(),
-            };
+    // Default to the current date if $desiredDate is not provided
+    $desiredDate = $desiredDate ?: date('Y-m-d');
 
-            // Calculate the end date as the current date and time
-            $endDate = $currentDateTime;
+    // Retrieve the class IDs assigned to the teacher
+    $classIds = SchoolClass::where('teacher_id', $user->uuid)->pluck('id');
 
-            // Fetch attendance data for selected classes and time frame
-            $attendanceData = [];
+    if ($classSelector) {
+        // If a class selector is provided, filter classes based on it
+        $classIds->where('class_selector', $classSelector);
+    }
 
-            // Loop through class IDs
-            foreach ($classIds as $classId) {
-                // Fetch attendance data for each class and add it to $attendanceData
-                $classAttendance = $this->getAttendanceForClass($classId, $startDate, $endDate);
+    // Retrieve students in the assigned classes
+    $students = User::whereIn('class_id', $classIds)->get();
 
-                if (!empty($classAttendance)) {
-                    $attendanceData[] = $classAttendance;
+    // Initialize arrays to store attendance status
+    $attendanceStatus = [
+        'approved' => [],
+        'rejected' => [],
+        'pending' => [],
+    ];
+
+    $studentCount = $students->count(); // Calculate the student count
+
+    foreach ($students as $student) {
+        // Check if there is a processing history record
+        $attendance = ProcessingHistory::where([
+            'processing_date' => $desiredDate,
+            'user_id' => $student->uuid,
+        ])->latest('created_at')->first();
+
+        // Check if there is a post for the student for the desired date
+        $post = Post::where([
+            'user_uuid' => $student->uuid,
+            'created_at' => $desiredDate,
+        ])
+        ->whereNotIn('status', ['approved', 'rejected']) // Exclude approved and rejected posts
+        ->first();
+
+        $attendanceDate = null; // Initialize the variable
+        
+        if ($attendance) {
+            // Get the newest attendance record for the student
+            $attendanceDate = $attendance->created_at->toDateString();
+
+            // Get the newest attendance record for the student and check the date
+            if ($attendanceDate == $desiredDate) {
+                $status = $attendance->status;
+
+                // Add the status to the appropriate category
+                if ($status === 'approved') {
+                    $attendanceStatus['approved'][] = [
+                        'student_uuid' => $student->uuid,
+                        'date' => $attendanceDate,
+                    ];
+                } else if ($status === 'rejected') {
+                    $attendanceStatus['rejected'][] = [
+                        'student_uuid' => $student->uuid,
+                        'date' => $attendanceDate,
+                    ];
+                } else {
+                    $attendanceStatus['pending'][] = [
+                        'student_uuid' => $student->uuid,
+                        'date' => $attendanceDate,
+                    ];
                 }
             }
-
-            return response()->json(['attendance' => $attendanceData]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to retrieve attendance'], 500);
+        } elseif ($post && $post->created_at->toDateString() == $desiredDate) {
+            // There is no processing history record, but a post exists, mark as pending
+            $attendanceStatus['pending'][] = [
+                'student_uuid' => $student->uuid,
+                'date' => null, // You can set it to null or leave it empty
+            ];
         }
     }
 
-    // Function to retrieve attendance data for a specific class
-    private function getAttendanceForClass($classId, $startDate, $endDate)
-{
-    try {
-        // Fetch all posts for the specified class within the date range
-        $posts = Post::where('class_id', $classId)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get();
+    $classes = SchoolClass::whereIn('id', $classIds)->get();
 
-        // Initialize an array to store attendance data
-        $attendance = [];
+    // Include the classes in the response
+    $attendanceStatus['classes'] = $classes;
 
-        foreach ($posts as $post) {
-            // You might want to add additional conditions to determine attendance
-            // For example, check the post's status or processing history
+    // Include the student count in the JSON response
+    $attendanceStatus['studentCount'] = $studentCount;
 
-            // Assuming 'status' is 'approved' and there is a 'processing_date' in history
-            if ($post->status === 'approved' && $post->processingHistory) {
-                $attendance[] = [
-                    'date' => $post->processingHistory->processing_date->toDateString(),
-                    'status' => 'Present', // You can customize this based on your logic
-                    'uuid' => $post->processingHistory->uuid,
-                ];
-            } else {
-                $attendance[] = [
-                    'date' => $post->created_at->toDateString(),
-                    'status' => 'Absent', // You can customize this based on your logic
-                ];
-            }
-        }
-
-        return [
-            'class_id' => $classId,
-            'attendance' => $attendance,
-        ];
-    } catch (\Exception $e) {
-        return [
-            'class_id' => $classId,
-            'attendance' => [], // Return an empty array in case of an exception
-        ];
-    }
+    return $attendanceStatus;
 }
+
+
+
+
         
 }

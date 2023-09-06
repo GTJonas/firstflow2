@@ -2,7 +2,7 @@ import TimeDifference from "./timeDifference.tsx";
 import axios from "axios";
 import getAuthHeaders from "../../../api/getAuthHeaders.tsx";
 
-const API_BASE_URL = "http://192.168.1.78:8000/api"; // Change to your API URL
+const API_BASE_URL = "http://194.71.0.30:8000/api"; // Change to your API URL
 
 const PostItem = ({ post, user }) => {
   const formatTime = (timeString) => {

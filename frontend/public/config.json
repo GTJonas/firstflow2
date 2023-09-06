@@ -1,5 +1,5 @@
 {
-  "apiBaseUrl": "http://localhost:8000",
+  "apiBaseUrl": "http://194.71.0.30:8000",
   "apis": [
     {
       "path": "/api/protected",
@@ -14,11 +14,11 @@
       "description": ""
     },
     {
-      "path": "/api/",
+      "path": "/api/update-user-profile",
       "description": "Placeholder API."
     },
     {
-      "path": "/api/",
+      "path": "/api/user-by-roles",
       "description": "Placeholder API."
     }
   ]

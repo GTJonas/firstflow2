@@ -16,6 +16,7 @@ class ProcessingHistory extends Model
     protected $fillable = [
         'post_id',
         'supervisor_id',
+        'user_id',
         'processing_date',
         'feedback',
         'status',

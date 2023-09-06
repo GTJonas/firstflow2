@@ -82,7 +82,7 @@ class UsersController extends Controller
                 'bio' => $request->input('bio'),
             ]);
 
-            $storagePath = 'http://192.168.1.78:8000/storage/';
+            $storagePath = 'http://194.71.0.30:8000/storage/';
 
             $imagePath = null;
             if ($request->hasFile('profile_picture')) {

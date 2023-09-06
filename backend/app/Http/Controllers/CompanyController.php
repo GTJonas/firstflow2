@@ -68,7 +68,7 @@ class CompanyController extends Controller
             'about' => 'nullable|string|max:255',
         ]);
 
-        $url = 'http://192.168.1.78:8000/storage/';
+        $url = 'http://194.71.0.30:8000/storage/';
 
         // Handle image uploads for profile_picture and banner
         $profilePicturePath = null;
@@ -161,7 +161,7 @@ class CompanyController extends Controller
 
             $companyData = [];
 
-            $url = 'http://192.168.1.78:8080/company/';
+            $url = 'http://194.71.0.30:8000/company/';
 
             foreach ($companies as $company) {
                 // Retrieve the supervisor associated with the company
@@ -243,14 +243,55 @@ class CompanyController extends Controller
         return response()->json(['companies' => $companiesWithSupervisors]);
     }
 
+    public function favoriteCompanies()
+    {
+        return $this->belongsToMany(Company::class, 'user_favorite_companies', 'user_id', 'company_id');
+    }
+
+    public function index(Request $request)
+    {
+        // Retrieve the authenticated user
+        $user = JWTAuth::parseToken()->authenticate();
+    
+        // Fetch the list of favorite companies for the user
+        $favoriteCompanies = $user->favorite_companies; // Assuming you have a relationship defined
+    
+        // Convert the collection to an indexed array with keys starting from 0
+        $formattedFavoriteCompanies = $favoriteCompanies->values()->toArray();
+    
+        // Create an indexed array of favorite companies with consistent structure
+        $indexedFavoriteCompanies = [];
+        foreach ($formattedFavoriteCompanies as $key => $favoriteCompany) {
+            $indexedFavoriteCompanies[] = [$key => $favoriteCompany];
+        }
+    
+        return response()->json($indexedFavoriteCompanies);
+    }
+    
+
     public function favoriteCompany($companyId)
     {
         try {
+            // Get the JWT token from the request header
+            $token = JWTAuth::getToken();
+
+            if (!$token) {
+                // Token not found in the request header
+                throw new JWTException('Token not provided', 400);
+            }
+
+            // Attempt to verify and authenticate the token
+            $user = JWTAuth::toUser($token);
+
+            if (!$user) {
+                // Token is invalid or user not found
+                throw new JWTException('Invalid token', 401);
+            }
+            
             $company = Company::where('uuid', $companyId)->firstOrFail();
-            $teacher = JWTAuth::parseToken()->authenticate();
 
             // Call the common method for adding to favorites
-            $this->addToFavorites($teacher, $company->uuid);
+            $this->addToFavorites($user, $company->uuid);
 
             return response()->json(['message' => 'Company added to favorites']);
         } catch (\Exception $e) {

@@ -9,7 +9,7 @@ function RightSidebar({ user }) {
   async function fetchData() {
     try {
       const response = await axios.get(
-        "http://192.168.1.78:8000/api/show-own-class",
+        "http://194.71.0.30:80000/api/show-own-class",
         {
           headers: getAuthHeaders(),
         }
