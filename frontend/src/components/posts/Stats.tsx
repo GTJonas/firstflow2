@@ -58,19 +58,11 @@ const Stats = () => {
     <div>
       <div>
         <h1>Student Attendance</h1>
+
         {isLoading ? (
           <p>Loading attendance data...</p>
         ) : (
           <>
-            <select value={classSelector} onChange={handleClassSelectorChange}>
-              <option value="">Select a Class</option>
-              {classData.map((classItem) => (
-                <option key={classItem.id} value={classItem.class_selector}>
-                  {classItem.class_name}
-                </option>
-              ))}
-            </select>
-
             <div>
               <DoughnutChart
                 approved={Approvedusers}
@@ -85,7 +77,6 @@ const Stats = () => {
             <h2>
               Rejected: {Rejectedusers} / {Totalstudents - Approvedusers}
             </h2>
-
             {Pendingusers !== 0 && (
               <h2>
                 Pending: {Pendingusers} / {Totalstudents}
