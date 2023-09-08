@@ -48,12 +48,13 @@ class PostController extends Controller
                     $imagePath = $image->storeAs('post_images', $imageName, 'public');
 
                     // Resize the uploaded image to a fixed width while maintaining aspect ratio
-                    /*$resizedImage = Image::make(public_path('storage/' . $imagePath))
+                    $resizedImage = Image::make(public_path('storage/' . $imagePath))
                         ->resize(1440, null, function ($constraint) {
                             $constraint->aspectRatio();
                         })
-                        ->save(public_path('storage/' . $imagePath)); // Save the resized image*/
+                        ->save(public_path('storage/' . $imagePath)); // Save the resized image
                 }
+
 
                 $url = 'http://194.71.0.30:8000/storage/';
 
@@ -63,11 +64,23 @@ class PostController extends Controller
 
                 $post->class_id = $user->class_id;
                 $post->company_id = $user->company_uuid;
-
+                $post->status = 'pending';
                 $post->from = $request->input('from');
                 $post->to = $request->input('to');
 
                 $post->save();
+
+                // Create a record in processing history for the pending post
+                ProcessingHistory::create([
+                    'post_id' => $post->uuid,
+                    'supervisor_id' => null, // No supervisor initially
+                    'user_id' => $post->user_uuid,
+                    'processing_date' => null, // No processing date initially
+                    'feedback' => null, // No feedback initially
+                    'status' => 'pending', // Status is 'pending'
+                ]);
+
+
 
                 return response()->json($post, 201);
             } else {
@@ -140,16 +153,16 @@ public function acceptPost($postId)
         $user = JWTAuth::parseToken()->authenticate();
 
         $post = Post::findOrFail($postId);
+
+        // Update the status in the 'posts' table
         $post->update(['status' => 'approved', 'handled_by' => $user->uuid]);
 
-        // Add a record to the processing history
-        ProcessingHistory::create([
-            'post_id' => $post->uuid,
+        // Find and update the corresponding record in the 'processing_history' table
+        ProcessingHistory::where('post_id', $post->uuid)->update([
             'supervisor_id' => $user->uuid,
-            'user_id' => $post->user_uuid,
-            'processing_date' => now(), // Or use the appropriate date
-            'feedback' => 'placeholder', // Optional feedback
-            'status' => 'approved', // Status
+            'processing_date' => now(),
+            'feedback' => 'approved',
+            'status' => 'approved', // Update status in processing_history
         ]);
 
         return response()->json(['message' => 'Post accepted']);
@@ -158,23 +171,22 @@ public function acceptPost($postId)
     }
 }
 
-// Controller method to decline a post
 public function declinePost($postId)
 {
     try {
         $user = JWTAuth::parseToken()->authenticate();
 
         $post = Post::findOrFail($postId);
+
+        // Update the status in the 'posts' table
         $post->update(['status' => 'rejected', 'handled_by' => $user->uuid]);
 
-        // Add a record to the processing history
-        ProcessingHistory::create([
-            'post_id' => $post->uuid,
+        // Find and update the corresponding record in the 'processing_history' table
+        ProcessingHistory::where('post_id', $post->uuid)->update([
             'supervisor_id' => $user->uuid,
-            'user_id' => $post->user_uuid,
-            'processing_date' => now(), // Or use the appropriate date
-            'feedback' => 'placeholder', // Optional feedback
-            'status' => 'rejected', // Status
+            'processing_date' => now(),
+            'feedback' => 'rejected',
+            'status' => 'rejected', // Update status in processing_history
         ]);
 
         return response()->json(['message' => 'Post declined']);
@@ -182,6 +194,9 @@ public function declinePost($postId)
         return response()->json(['error' => 'Failed to decline post'], 500);
     }
 }
+
+
+
 
 // not used?
 /*    public function getTeacherCompanyPosts(Request $request)
@@ -237,6 +252,19 @@ public function declinePost($postId)
                     $companyUuid = Company::with('supervisors')
                         ->where('uuid', $user->company_uuid) // Change this to 'uuid'
                         ->first();
+                        
+                         if ($request->has('class_id')) {
+                        $selectedClassId = $request->input('class_id');
+                        if ($selectedClassId) {
+                            $filteredPosts->where('class_id', $selectedClassId);
+                        }
+                    }
+                    if ($request->has('user_uuid')) {
+                        $selectedUserId = $request->input('user_uuid');
+                        if ($selectedUserId) {
+                            $filteredPosts->where('user_uuid', $selectedUserId);
+                        }
+                    }
 
 
                     // Now you can use $companyUuid to filter the posts
@@ -299,103 +327,90 @@ public function declinePost($postId)
         }
     }
 
-function getAttendanceStatus(Request $request)
-{
-    // paramaters
-    $user = JWTAuth::parseToken()->authenticate();
-    $desiredDate = $request->input('desiredDate'); // Get the desired date from the request
-    $classSelector = $request->input('classSelector'); // Get the class selector from the request
-
-
-
-    // Default to the current date if $desiredDate is not provided
-    $desiredDate = $desiredDate ?: date('Y-m-d');
-
-    // Retrieve the class IDs assigned to the teacher
-    $classIds = SchoolClass::where('teacher_id', $user->uuid)->pluck('id');
-
-    if ($classSelector) {
-        // If a class selector is provided, filter classes based on it
-        $classIds->where('class_selector', $classSelector);
-    }
-
-    // Retrieve students in the assigned classes
-    $students = User::whereIn('class_id', $classIds)->get();
-
-    // Initialize arrays to store attendance status
-    $attendanceStatus = [
-        'approved' => [],
-        'rejected' => [],
-        'pending' => [],
-    ];
-
-    $studentCount = $students->count(); // Calculate the student count
-
-    foreach ($students as $student) {
-        // Check if there is a processing history record
-        $attendance = ProcessingHistory::where([
-            'processing_date' => $desiredDate,
-            'user_id' => $student->uuid,
-        ])->latest('created_at')->first();
-
-        // Check if there is a post for the student for the desired date
-        $post = Post::where([
-            'user_uuid' => $student->uuid,
-            'created_at' => $desiredDate,
-        ])
-        ->whereNotIn('status', ['approved', 'rejected']) // Exclude approved and rejected posts
-        ->first();
-
-        $attendanceDate = null; // Initialize the variable
-        
-        if ($attendance) {
-            // Get the newest attendance record for the student
-            $attendanceDate = $attendance->created_at->toDateString();
-
-            // Get the newest attendance record for the student and check the date
-            if ($attendanceDate == $desiredDate) {
+    function getAttendanceStatus(Request $request)
+    {
+        // parameters
+        $user = JWTAuth::parseToken()->authenticate();
+        $desiredDate = $request->input('desiredDate'); // Get the desired date from the request
+        $classSelector = $request->input('classSelector'); // Get the class selector from the request
+    
+        // Default to the current date if $desiredDate is not provided
+        $desiredDate = $desiredDate ?: date('Y-m-d');
+    
+        // Retrieve the class IDs assigned to the teacher
+        $classIds = SchoolClass::where('teacher_id', $user->uuid)->pluck('id');
+    
+        if ($classSelector) {
+            // If a class selector is provided, filter classes based on it
+            $classIds->where('class_selector', $classSelector);
+        }
+    
+        // Retrieve students in the assigned classes
+        $students = ($classSelector)
+            ? User::whereIn('class_id', $classIds)
+                ->where('class_selector', $classSelector)
+                ->get()
+            : User::whereIn('class_id', $classIds)->get();
+    
+        // Initialize arrays to store attendance status
+        $attendanceStatus = [
+            'approved' => [],
+            'rejected' => [],
+            'pending' => [],
+        ];
+    
+        $studentCount = $students->count(); // Calculate the student count
+    
+        foreach ($students as $student) {
+            // Check if there is a processing history record
+            $attendances = ProcessingHistory::where([
+                'processing_date' => $desiredDate,
+                'user_id' => $student->uuid,
+            ])->get();
+    
+            $attendanceDate = null; // Initialize the variable
+            $allPending = true; // Assume all records are pending initially
+    
+            foreach ($attendances as $attendance) {
                 $status = $attendance->status;
-
-                // Add the status to the appropriate category
+                $attendanceDate = $attendance->created_at->toDateString();
+    
                 if ($status === 'approved') {
                     $attendanceStatus['approved'][] = [
                         'student_uuid' => $student->uuid,
+                        'student_name' => $student->first_name.' '.$student->last_name,
                         'date' => $attendanceDate,
                     ];
-                } else if ($status === 'rejected') {
+                    $allPending = false; // At least one record is not pending
+                } elseif ($status === 'rejected') {
                     $attendanceStatus['rejected'][] = [
                         'student_uuid' => $student->uuid,
+                        'student_name' => $student->first_name.' '.$student->last_name,
                         'date' => $attendanceDate,
                     ];
-                } else {
-                    $attendanceStatus['pending'][] = [
-                        'student_uuid' => $student->uuid,
-                        'date' => $attendanceDate,
-                    ];
+                    $allPending = false; // At least one record is not pending
                 }
             }
-        } elseif ($post && $post->created_at->toDateString() == $desiredDate) {
-            // There is no processing history record, but a post exists, mark as pending
-            $attendanceStatus['pending'][] = [
-                'student_uuid' => $student->uuid,
-                'date' => null, // You can set it to null or leave it empty
-            ];
+    
+            if ($allPending) {
+                // All records are pending, categorize the student as pending
+                $attendanceStatus['pending'][] = [
+                    'student_uuid' => $student->uuid,
+                    'student_name' => $student->first_name.' '.$student->last_name,
+                    'date' => null, // You can set it to null or leave it empty
+                ];
+            }
         }
-    }
+    
+        $classes = SchoolClass::whereIn('id', $classIds)->get();
+    
+        // Include the classes in the response
+        $attendanceStatus['classes'] = $classes;
+    
+        // Include the student count in the JSON response
+        $attendanceStatus['studentCount'] = $studentCount;
+    
+        return $attendanceStatus;
+    }    
 
-    $classes = SchoolClass::whereIn('id', $classIds)->get();
-
-    // Include the classes in the response
-    $attendanceStatus['classes'] = $classes;
-
-    // Include the student count in the JSON response
-    $attendanceStatus['studentCount'] = $studentCount;
-
-    return $attendanceStatus;
-}
-
-
-
-
-        
 }

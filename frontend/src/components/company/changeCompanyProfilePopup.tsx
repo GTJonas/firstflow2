@@ -15,7 +15,7 @@ const ChangeCompanyProfilePopup = ({ onClose }) => {
   useEffect(() => {
     // Fetch the company data and set the initial values of updateName and updateCategory
     axios
-      .get(`http://5.152.153.222:8000/api/company/show/${uuid}`)
+      .get(`http://194.71.0.30:8000/api/company/show/${uuid}`)
       .then((response) => {
         const { company } = response.data;
         setUpdateName(company.name);
@@ -50,7 +50,7 @@ const ChangeCompanyProfilePopup = ({ onClose }) => {
       }
 
       const response = await axios.post(
-        `http://5.152.153.222:8000/api/company/edit/${uuid}`,
+        `http://194.71.0.30:8000/api/company/edit/${uuid}`,
         updatedData,
         {
           headers: {

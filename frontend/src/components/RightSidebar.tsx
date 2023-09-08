@@ -4,12 +4,13 @@ import getAuthHeaders from "../api/getAuthHeaders.tsx";
 
 function RightSidebar({ user }) {
   const [classes, setClasses] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
 
   async function fetchData() {
     try {
       const response = await axios.get(
-        "http://194.71.0.30:80000/api/show-own-class",
+        "http://194.71.0.30:8000/api/show-own-class",
         {
           headers: getAuthHeaders(),
         }
@@ -22,8 +23,6 @@ function RightSidebar({ user }) {
       setIsLoading(false);
     }
   }
-
-  //console.log(user);
 
   useEffect(() => {
     if (user) {
@@ -39,6 +38,8 @@ function RightSidebar({ user }) {
     if (!user) {
       return <p>User not available.</p>;
     }
+
+    const uniqueTeachers = {}; // To track unique teachers
 
     const roleID = user.user.roleId;
     switch (roleID) {
@@ -57,26 +58,37 @@ function RightSidebar({ user }) {
             <h2>Teachers</h2>
             {classes.length > 0 ? (
               <ul>
-                {classes
-                  .flatMap((classItem) => classItem.teacher)
-                  .map((teacher) => (
-                    <li key={teacher.uuid}>
-                      <img
-                        src={teacher.profile_picture}
-                        className="rounded-circle"
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                        }}
-                        alt="Teacher Profile"
-                      />
-                      <p>
-                        {teacher.first_name} {teacher.last_name} -{" "}
-                        {teacher.classname}
-                      </p>
-                    </li>
-                  ))}
+                {classes.map((classItem) => {
+                  const teacher = classItem.teacher;
+                  const teacherUUID = teacher.uuid;
+
+                  // Check if this teacher has been rendered already
+                  if (!uniqueTeachers[teacherUUID]) {
+                    // Mark this teacher as rendered
+                    uniqueTeachers[teacherUUID] = true;
+
+                    return (
+                      <li key={teacherUUID}>
+                        <img
+                          src={teacher.profile_picture}
+                          className="rounded-circle"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                          }}
+                          alt="Teacher Profile"
+                        />
+                        <p>
+                          {teacher.first_name} {teacher.last_name}
+                        </p>
+                      </li>
+                    );
+                  } else {
+                    // This teacher has already been rendered, skip
+                    return null;
+                  }
+                })}
               </ul>
             ) : (
               <p>No unique teachers available.</p>

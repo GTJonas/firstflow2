@@ -14,13 +14,12 @@ class CreatePostsTable extends Migration
             $table->uuid()->primary();
             $table->text('content');
             $table->uuid('user_uuid')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->uuid('handled_by')->nullable(); // Foreign key to the users table
             $table->string('image')->nullable();
             $table->time('from')->nullable();
             $table->time('to')->nullable();
-            $table->timestamps();
-
+            $table->timestamps();   
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
         });
 

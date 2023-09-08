@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_URL = "http://5.152.153.222:8000";
+const API_URL = "http://194.71.0.30:8000";
 
 function CompanyLists() {
   const [searchQuery, setSearchQuery] = useState("");

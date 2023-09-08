@@ -20,6 +20,10 @@
     {
       "path": "/api/user-by-roles",
       "description": "Placeholder API."
+    },
+    {
+      "path": "/api/store-post",
+      "description": "Placeholder API."
     }
   ]
 }

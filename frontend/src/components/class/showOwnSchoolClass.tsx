@@ -16,10 +16,10 @@ const ShowOwnSchoolClass = () => {
     async function fetchData() {
       try {
         const [classDetailsResponse, companiesResponse] = await Promise.all([
-          axios.get("http://5.152.153.222:8000/api/show-own-class", {
+          axios.get("http://194.71.0.30:8000/api/show-own-class", {
             headers: getAuthHeaders(),
           }),
-          axios.get("http://5.152.153.222:8000/api/company/all/show", {
+          axios.get("http://194.71.0.30:8000/api/company/all/show", {
             headers: getAuthHeaders(),
           }),
         ]);
@@ -32,7 +32,7 @@ const ShowOwnSchoolClass = () => {
             classDetailsResponse.data.classes[0].teacher.school_id;
 
           const responseStudents = await axios.get(
-            `http://5.152.153.222:8000/api/get-all-students-from-school/${schoolId}`,
+            `http://194.71.0.30:8000/api/get-all-students-from-school/${schoolId}`,
             {
               headers: {
                 ...getAuthHeaders(),
@@ -72,7 +72,7 @@ const ShowOwnSchoolClass = () => {
   ) => {
     try {
       const response = await axios.put(
-        "http://5.152.153.222:8000/api/change-company",
+        "http://194.71.0.30:8000/api/change-company",
         {
           user_id: classDetailsList[classIndex].students[studentIndex].uuid,
           new_company_uuid: newCompanyUuid,
@@ -109,7 +109,7 @@ const ShowOwnSchoolClass = () => {
   const handleAssignStudents = async () => {
     try {
       const response = await axios.put(
-        "http://5.152.153.222:8000/api/assign-students-to-class",
+        "http://194.71.0.30:8000/api/assign-students-to-class",
         {
           class_id: classId,
           student_ids: studentIds,

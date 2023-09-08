@@ -2,34 +2,46 @@ import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
 interface DoughnutChartProps {
-  approved?: number;
-  declined?: number;
-  pending?: number;
+  approvedUsers: User[];
+  rejectedUsers: User[];
+  pendingUsers: User[];
+}
+
+interface User {
+  id: string;
+  name: string;
+  status: "approved" | "rejected" | "pending";
 }
 
 const DoughnutChart: React.FC<DoughnutChartProps> = ({
-  approved = 1,
-  declined = 1,
-  pending = 1,
+  approvedUsers,
+  rejectedUsers,
+  pendingUsers,
 }) => {
-  const chartRef = useRef<HTMLCanvasElement>(null);
-  let myChart: Chart | null = null;
+  const chartRef = useRef<HTMLCanvasElement | null>(null);
+  const myChartRef = useRef<Chart | null>(null);
 
   useEffect(() => {
     if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d");
 
-      if (myChart) {
-        myChart.destroy();
+      // Destroy the previous chart if it exists
+      if (myChartRef.current) {
+        myChartRef.current.destroy();
       }
 
-      myChart = new Chart(ctx, {
+      // Create a new doughnut chart
+      myChartRef.current = new Chart(ctx, {
         type: "doughnut",
         data: {
-          labels: ["Approved", "Declined", "Pending"],
+          labels: ["Approved", "Rejected", "Pending"],
           datasets: [
             {
-              data: [approved, declined, pending],
+              data: [
+                approvedUsers.length,
+                rejectedUsers.length,
+                pendingUsers.length,
+              ],
               backgroundColor: ["#33FF57", "#FF5733", "#FFFF00"],
             },
           ],
@@ -38,11 +50,12 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
     }
 
     return () => {
-      if (myChart) {
-        myChart.destroy();
+      // Destroy the chart when the component unmounts
+      if (myChartRef.current) {
+        myChartRef.current.destroy();
       }
     };
-  }, [approved, declined, pending]);
+  }, [approvedUsers, rejectedUsers, pendingUsers]);
 
   return (
     <div style={{ width: "200px" }}>
@@ -51,7 +64,6 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
         style={{
           height: "100%",
           width: "100%",
-          // Add your CSS styles here
         }}
       ></canvas>
     </div>

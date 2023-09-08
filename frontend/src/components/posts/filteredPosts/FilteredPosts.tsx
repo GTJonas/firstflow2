@@ -55,7 +55,7 @@ const getTimeAgo = (date) => {
   }
 };
 
-const FilteredPosts = ({ user }) => {
+const FilteredPosts = ({ user }: { user: any }) => {
   const [loading, setLoading] = useState(true);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState("");
@@ -72,11 +72,19 @@ const FilteredPosts = ({ user }) => {
   const [perPage, setPerPage] = useState(5); // Default per page
   const [totalPosts, setTotalPosts] = useState(0);
 
+  // Add a loading state for posts related to a specific student
+  const [loadingStudentPosts, setLoadingStudentPosts] = useState(false);
+
   const token = localStorage.getItem("token");
   const decodedToken = jwtDecode(token);
 
   const handleStudentChange = (studentUuid) => {
-    setSelectedStudent(studentUuid); // Step 2
+    setSelectedStudent(studentUuid);
+    setFilteredPosts([]); // Reset filteredPosts to an empty array
+
+    // Set loadingStudentPosts to true while fetching student-specific posts
+    setLoadingStudentPosts(true);
+
     // Call the API again with the updated student UUID
     fetchAndSetData();
   };
@@ -84,19 +92,13 @@ const FilteredPosts = ({ user }) => {
   const fetchAndSetData = async () => {
     try {
       const params = {
-        class_id: selectedClassId,
         per_page: perPage,
         page: currentPage,
+        class_id: selectedClassId,
+        user_uuid: selectedStudent, // Make sure this value is correct
       };
 
-      if (!isHistoryPage) {
-        params.weeks = weeks;
-      }
-
-      if (selectedStudent) {
-        // Include selected student UUID
-        params.user_uuid = selectedStudent;
-      }
+      // Make the API request
 
       const postsResponse = await axios.get(`${API_BASE_URL}/filtered-posts`, {
         params: params,
@@ -109,16 +111,21 @@ const FilteredPosts = ({ user }) => {
       setLastPage(postsResponse.data.pagination.last_page);
       setPerPage(postsResponse.data.pagination.per_page);
       setTotalPosts(postsResponse.data.pagination.total);
+
+      // Set loadingStudentPosts back to false once posts are loaded
+      setLoadingStudentPosts(false);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
       setLoading(false);
+      // Also set loadingStudentPosts to false on error
+      setLoadingStudentPosts(false);
     }
   };
 
   useEffect(() => {
     fetchAndSetData();
-  }, [selectedClassId, weeks, currentPage, perPage]);
+  }, [selectedClassId, weeks, currentPage, perPage, selectedStudent]);
 
   const fetchClasses = async () => {
     try {
@@ -192,13 +199,13 @@ const FilteredPosts = ({ user }) => {
         return (
           <div>
             <select
-              value={selectedClassId}
-              onChange={(e) => setSelectedClassId(e.target.value)}
+              value={selectedClassId} // This value is selected based on user interaction
+              onChange={(e) => setSelectedClassId(e.target.value)} // This updates the selectedClassId state
             >
               <option value="">All Classes</option>
               {classOptions.map((classObj) => (
                 <option key={classObj.classid} value={classObj.classid}>
-                  {classObj.classname}
+                  {classObj.classname} - {classObj.school_name}
                 </option>
               ))}
             </select>
@@ -223,12 +230,14 @@ const FilteredPosts = ({ user }) => {
         return (
           <div>
             <select
-              value={selectedStudent}
+              value={selectedStudent} // This value should match the UUID of the selected student
               onChange={(e) => handleStudentChange(e.target.value)}
             >
               <option value="">Select Student</option>
               {selectedClass.students.map((student) => (
                 <option key={student.uuid} value={student.uuid}>
+                  {" "}
+                  {/* This value should be student.uuid */}
                   {student.first_name} {student.last_name}
                 </option>
               ))}
@@ -240,36 +249,53 @@ const FilteredPosts = ({ user }) => {
     return null;
   }, [selectedClassId, selectedStudent, classOptions]);
 
-  return (
-    <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div>
-          {user.user.roleId !== 4 && renderClassSelector}
-          {renderStudentSelector} {/* Render the student selector */}
-          <div>{renderPostsByTimeAgo}</div>
+  if (currentPage >= 1) {
+    return (
+      <>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
           <div>
-            <button
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous Page
-            </button>
-            <span>
-              {currentPage} / {lastPage}
-            </span>
-            <button
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === lastPage}
-            >
-              Next Page
-            </button>
+            {/* Show a loading indicator while loading student-specific posts */}
+            {loadingStudentPosts ? (
+              <p>Loading student posts...</p>
+            ) : (
+              <>
+                {user.user.roleId !== 4 && renderClassSelector}
+                {renderStudentSelector} {/* Render the student selector */}
+                <div>{renderPostsByTimeAgo}</div>
+              </>
+            )}
+            {totalPosts < 5 ? (
+              <></>
+            ) : (
+              <div className="d-flex justify-content-between align-items-center">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="btn btn-primary"
+                >
+                  Previous Page
+                </button>
+                <span>
+                  {currentPage} / {lastPage}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === lastPage}
+                  className="btn btn-primary"
+                >
+                  Next Page
+                </button>
+              </div>
+            )}
           </div>
-        </div>
-      )}
-    </>
-  );
+        )}
+      </>
+    );
+  } else {
+    return <>No posts found.</>;
+  }
 };
 
 export default FilteredPosts;

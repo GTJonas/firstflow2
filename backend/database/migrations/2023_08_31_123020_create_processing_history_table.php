@@ -12,10 +12,10 @@ class CreateProcessingHistoryTable extends Migration
             $table->id();
             $table->uuid('user_id');
             $table->uuid('post_id');
-            $table->uuid('supervisor_id');
-            $table->date('processing_date');
+            $table->uuid('supervisor_id')->nullable();
+            $table->date('processing_date')->nullable();
             $table->text('feedback')->nullable();
-            $table->enum('status', [ 'approved', 'rejected'])->default(null);
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
 
             $table->timestamps();
 

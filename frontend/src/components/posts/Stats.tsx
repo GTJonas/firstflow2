@@ -6,10 +6,11 @@ import DoughnutChart from "../../Charts/UserattendanceChart";
 const Stats = () => {
   const [classData, setClassData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [Approvedusers, setApprovedusers] = useState(0);
-  const [Rejectedusers, setRejectedusers] = useState(0);
-  const [Pendingusers, setPendingusers] = useState(0);
-  const [Totalstudents, setTotalstudents] = useState(0);
+  const [approvedUsers, setApprovedUsers] = useState([]); // Updated state initialization
+  const [rejectedUsers, setRejectedUsers] = useState([]); // Updated state initialization
+  const [pendingUsers, setPendingUsers] = useState([]); // Updated state initialization
+
+  const [totalStudentsCount, setTotalStudentsCount] = useState(0);
 
   // State to hold the selected class
   const [classSelector, setClassSelector] = useState(""); // Initialize with an empty string
@@ -20,10 +21,6 @@ const Stats = () => {
         const response = await axios.get(
           "http://194.71.0.30:8000/api/getAttendanceStatus",
           {
-            desiredDate,
-            classSelector, // Include the classSelector in the request body
-          },
-          {
             headers: {
               ...getAuthHeaders(),
             },
@@ -32,20 +29,16 @@ const Stats = () => {
 
         setClassData(response.data);
         setIsLoading(false);
-        setApprovedusers(response.data.approved.length);
-        setRejectedusers(response.data.rejected.length);
-        setPendingusers(response.data.pending.length);
-        setTotalstudents(response.data.studentCount);
 
-        // Log the value of Approvedusers here
-        console.log(Approvedusers);
+        setApprovedUsers(response.data.approved);
+        setRejectedUsers(response.data.rejected);
+        setPendingUsers(response.data.pending);
+        setTotalStudentsCount(response.data.studentCount);
       } catch (error) {
         console.error("Error fetching data:", error);
         setIsLoading(false);
       }
     };
-
-    console.log(classData);
 
     fetchData();
   }, [classSelector]);
@@ -54,6 +47,7 @@ const Stats = () => {
   const handleClassSelectorChange = (event) => {
     setClassSelector(event.target.value); // Update the classSelector state when the user selects a class
   };
+
   return (
     <div>
       <div>
@@ -65,23 +59,26 @@ const Stats = () => {
           <>
             <div>
               <DoughnutChart
-                approved={Approvedusers}
-                rejected={Rejectedusers}
-                pending={Pendingusers}
+                approvedUsers={approvedUsers}
+                rejectedUsers={rejectedUsers}
+                pendingUsers={pendingUsers}
               />
             </div>
 
-            <h2>
-              Approved: {Approvedusers} / {Totalstudents - Rejectedusers}
-            </h2>
-            <h2>
-              Rejected: {Rejectedusers} / {Totalstudents - Approvedusers}
-            </h2>
-            {Pendingusers !== 0 && (
+            {pendingUsers.length !== 0 && (
               <h2>
-                Pending: {Pendingusers} / {Totalstudents}
+                Pending: {pendingUsers.length} /{" "}
+                {totalStudentsCount -
+                  approvedUsers.length -
+                  rejectedUsers.length}
               </h2>
             )}
+            <h2>
+              Approved: {approvedUsers.length} / {totalStudentsCount}
+            </h2>
+            <h2>
+              Rejected: {rejectedUsers.length} / {totalStudentsCount}
+            </h2>
           </>
         )}
       </div>

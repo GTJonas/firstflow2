@@ -109,8 +109,21 @@ const PostItem = ({ post, user }) => {
 
       {user.user.roleId === 2 && post.status === "pending" && (
         <div className="Post-Actions">
-          <button onClick={handleAccept}>Accept</button>
-          <button onClick={handleDecline}>Decline</button>
+          <button
+            type="button"
+            className="btn btn-success"
+            onClick={handleAccept}
+            style={{ marginRight: "10px" }}
+          >
+            Accept
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleDecline}
+          >
+            Decline
+          </button>
         </div>
       )}
     </li>

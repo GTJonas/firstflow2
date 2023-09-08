@@ -60,19 +60,38 @@ class SchoolClassController extends Controller
                                 // Add the teacher to the uniqueTeachers array if not already present
                                 if (!in_array($teacher->uuid, $teacherIds)) {
                                     $teacherIds[] = $teacher->uuid;
+
+                                    // Initialize the created_classes array for the teacher
+                                    $createdClasses = [];
+
+                                    // Add created classes information here
+                                    // For example, let's assume the teacher has created two classes
+
+                                    //$classes foreach class -> teacheruuid = Unique teacher uuid 
+
+                                    // Dynamically retrieve the created classes for the teacher
+                                    $createdClasses = $teacher->classes->map(function ($createdClass) {
+                                        return [
+                                            'class_id' => $createdClass->id,
+                                            'class_name' => $createdClass->name,
+                                        ];
+                                    });
+
                                     $uniqueTeachers[] = [
                                         'uuid' => $teacher->uuid,
                                         'first_name' => $teacher->first_name,
                                         'last_name' => $teacher->last_name,
                                         'email' => $teacher->email,
-                                        '' => $teacher->email,
                                         'profile_picture' => $teacher->profile_picture,
+                                        'school_name' => $teacher->school->name,
+                                        'created_classes' => $createdClasses->toArray(),
                                         // Add other teacher properties as needed
                                     ];
                                 }
 
                                 $classesData[$classId] = [
                                     'classname' => $class->name,
+                                    'school_name' => $class->school->name,
                                     'classid' => $classId,
                                     'teacher' => [
                                         'uuid' => $teacher->uuid,
@@ -81,6 +100,7 @@ class SchoolClassController extends Controller
                                         'email' => $teacher->email,
                                         'profile_picture' => $teacher->profile_picture,
                                         'classname' => $class->name,
+                                        'school_name' => $teacher->school->name,
                                         // Add other teacher properties as needed
                                     ],
                                     'students' => [],
@@ -111,6 +131,7 @@ class SchoolClassController extends Controller
 
                     $classesData[$classId] = [
                         'classname' => $class->name,
+                        'school_name' => $class->school->name,
                         'classid' => $classId,
                         'teacher' => [
                             'uuid' => $class->teacher->uuid,
@@ -119,6 +140,7 @@ class SchoolClassController extends Controller
                             'email' => $class->teacher->email,
                             'school_id' => $class->teacher->school_id,
                             'profile_picture' => $class->teacher->profile_picture,
+                            'school_name' => $class->teacher->school->name,
                             // Add other teacher properties as needed
                         ],
                         'students' => [],
@@ -148,6 +170,7 @@ class SchoolClassController extends Controller
 
                 $classesData[$classId] = [
                     'classname' => $studentClass->name,
+                    'school_name' => $studentClass->school->name,
                     'classid' => $classId,
                     'teacher' => [
                         'uuid' => $studentClass->teacher->uuid,
@@ -155,7 +178,7 @@ class SchoolClassController extends Controller
                         'last_name' => $studentClass->teacher->last_name,
                         'email' => $studentClass->teacher->email,
                         'profile_picture' => $studentClass->teacher->profile_picture,
-
+                        'school_name' => $studentClass->teacher->school->name,
                         // Add other teacher properties as needed
                     ],
                     'students' => [],

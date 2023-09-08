@@ -206,3 +206,22 @@ export const fetchAllCompanyProfiles = async (url: string) => {
     throw error; // Rethrow the error to let the caller handle it
   }
 };
+
+const createPost = async (postData) => {
+  const apiUrls = await fetchApiUrls();
+  const url = apiUrls[5];
+
+  try {
+    const response = await axios.post(`${url}`, postData, {
+      headers: {
+        ...getAuthHeaders(), // Assuming getAuthHeaders() returns the Authorization header.
+        "Content-Type": "multipart/form-data", // Set the content type for file upload.
+      },
+    });
+    return response.data; // Make sure to return the data from the response.
+  } catch (error) {
+    throw error; // Rethrow the error to handle it in the Dashboard component.
+  }
+};
+
+export default createPost;

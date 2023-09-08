@@ -7,6 +7,9 @@ import "./Company-Style-Module.css";
 import ChangeCompanyProfilePopup from "../components/company/changeCompanyProfilePopup.tsx";
 import CreateCompanyProfile from "../components/company/createCompanyProfile.tsx";
 
+import PlaceholderCompanylogo from "../assets/company/company-picture.png";
+import Placeholderbanner from "../assets/company/banner.png";
+
 function Company() {
   const { uuid } = useParams();
   const [companyData, setCompanyData] = useState({ loading: true, data: null });
@@ -18,7 +21,7 @@ function Company() {
 
   useEffect(() => {
     axios
-      .get(`http://5.152.153.222:8000/api/company/show/${uuid}`)
+      .get(`http://194.71.0.30:8000/api/company/show/${uuid}`)
       .then((response) => {
         setCompanyData({ loading: false, data: response.data });
       })
@@ -45,39 +48,76 @@ function Company() {
       : "N/A";
 
     return (
-      <div className={"ContentWrapper"}>
-        <div className={"CompanyHeader"}>
-          <div>
-            <img className={"Banner"} src={company.banner} alt="Banner" />
-          </div>
-          <div>
-            <img
-              className={"Companylogo"}
-              src={company.profilePicture}
-              alt="Company_Picture"
-            />
-            <h2>{company.name}</h2>
-            <p>{company.category}</p>
-            <p>Ort: {company.location}</p>
-            <p>Om: {company.about}</p>
+      <>
+        <div>
+          <img
+            className={"Banner"}
+            src={company.banner || Placeholderbanner} // Use Placeholderbanner if company.banner is falsy
+            alt="Banner"
+            onError={(e) => {
+              e.target.src = Placeholderbanner; // Use Placeholderbanner on error
+            }}
+          />
+        </div>
+        <div className={"ContentWrapper"}>
+          <div className={"CompanyHeader"}></div>
+          <div className="container-fluid row pt-3  ">
+            <div className={"students col "}>
+              <div>
+                <img
+                  className={"Companylogo"}
+                  src={company.profilePicture || PlaceholderCompanylogo} // Use PlaceholderCompanylogo if company.profilePicture is falsy
+                  alt="Company_Picture"
+                  onError={(e) => {
+                    e.target.src = PlaceholderCompanylogo; // Use PlaceholderCompanylogo on error
+                  }}
+                />
+              </div>
+              <h2>{company.name}</h2>
+              <p>{company.category}</p>
+              {company.category === "" ? (
+                <p>arbetsamhet : {company.category}</p>
+              ) : (
+                <p>ingen arbetsamhet</p>
+              )}
+              {company.location == "" ? (
+                <p>Ort: {company.location}</p>
+              ) : (
+                <p>Plats finns inte</p>
+              )}
+              {company.about ? (
+                <p>Om: {company.about}</p>
+              ) : (
+                <p>Om: Företaget har inte skrivit något</p>
+              )}
+            </div>
+            <div className={"Supervisor  col"}>
+              <img
+                src={supervisor.profile_picture || PlaceholderImage} // Use Placeholderbanner if company.banner is falsy
+              />
+              <h4>{supervisorName}</h4>
+              <p>{supervisor.role}</p>
+              <h5>Email</h5>
+              <p>{supervisor.email}</p>
+              {supervisor.phoneNumber ? (
+                <>
+                  <h5>Telefonnummer</h5>
+                  <p>{supervisor.phoneNumber}</p>
+                </>
+              ) : null}
+
+              <div>
+                <a href="#" onClick={togglePopup}>
+                  Hantera Företagsprofil
+                </a>
+                {showPopup && (
+                  <ChangeCompanyProfilePopup onClose={togglePopup} />
+                )}
+              </div>
+            </div>
           </div>
         </div>
-        <div className={"Student"}>
-          <img src={PlaceholderImage} />
-          <h4>{supervisorName}</h4>
-          <p>{supervisor.role}</p>
-          <h5>Email</h5>
-          <p>{supervisor.email}</p>
-          <h5>Telefonnummer</h5>
-          <p>{supervisor.phoneNumber}</p>
-          <div>
-            <a href="#" onClick={togglePopup}>
-              Hantera Företagsprofil
-            </a>
-            {showPopup && <ChangeCompanyProfilePopup onClose={togglePopup} />}
-          </div>
-        </div>
-      </div>
+      </>
     );
   }
 }

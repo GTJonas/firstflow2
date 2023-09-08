@@ -13,9 +13,16 @@
   object-fit: cover;
   border-radius: 100%;
 }
-.Student img {
+.Supervisor img {
   width: 100px;
   height: 100px;
   object-fit: center;
   border-radius: 100%;
+}
+.Supervisor {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  align-content: start;
 }

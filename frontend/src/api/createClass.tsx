@@ -1,7 +1,7 @@
 import axios from "axios";
 import getAuthHeaders from "./getAuthHeaders.tsx";
 
-const API_URL = "http://5.152.153.222:8000";
+const API_URL = "http://194.71.0.30:8000";
 
 const createClass = async (classData) => {
   try {

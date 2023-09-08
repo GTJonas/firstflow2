@@ -11,7 +11,7 @@ const CreateCompanyProfile = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "http://5.152.153.222:8000/api/store-company",
+        "http://194.71.0.30:8000/api/store-company",
         {
           name: companyName,
           // Include other fields as needed for the company profile creation
