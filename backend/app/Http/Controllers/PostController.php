@@ -196,136 +196,83 @@ public function declinePost($postId)
 }
 
 
+public function getFilteredPosts(Request $request)
+{
+    try {
+        $user = JWTAuth::parseToken()->authenticate();
+        $role = $user->role_id;
 
+        // Get the 'user' query parameter
+        $userParam = $request->query('user');
 
-// not used?
-/*    public function getTeacherCompanyPosts(Request $request)
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
+        // Get the 'class' query parameter
+        $classParam = $request->query('class');
 
-            if ($user->role_id === 3) {
-                $validator = Validator::make($request->all(), [
-                    'company_uuid' => 'required|exists:companies,uuid',
-                ]);
+        // Initialize the query builder for 'Post' model
+        $filteredPosts = Post::query()->with('user');
 
-                if ($validator->fails()) {
-                    return response()->json(['error' => $validator->errors()], 400);
-                }
+        // Initialize an array to store user-related class IDs
+        $classIds = []; // Initialize the array here
 
-                $companyPosts = Post::whereHas('class', function ($query) use ($user, $request) {
-                    $query->where('teacher_id', $user->uuid)
-                        ->whereHas('company', function ($companyQuery) use ($request) {
-                            $companyQuery->where('uuid', $request->input('company_uuid'));
-                        });
-                })->get();
+        // Use a switch statement to determine how posts should be filtered
+        switch ($role) {
+            case 1: // Admin - Show all users
+                // No additional filtering needed
+                break;
 
-                return response()->json(['companyPosts' => $companyPosts]);
-            }
+            case 2: // Supervisor - Show only posts with the company UUID
+                $filteredPosts->where('company_id', $user->company_uuid);
+                break;
 
-            return response()->json(['error' => 'User is not a teacher.'], 400);
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Failed to authenticate.'], 401);
+            case 3: // Teacher - Show posts related to the teacher's classes
+                $classIds = SchoolClass::where('teacher_id', $user->uuid)->pluck('id');
+                $filteredPosts->whereIn('class_id', $classIds);
+                break;
+
+            case 4: // Student - Show only posts with the user's ID
+                $filteredPosts->where('user_uuid', $user->uuid);
+                break;
+
+            default:
+                // Handle other roles if needed
+                break;
         }
-    }
-*/
-    public function getFilteredPosts(Request $request)
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            $role = $user->role_id;
 
-            $filteredPosts = Post::query()->with('user');
-
-            switch ($role) {
-                case 1: //Admin
-                    $filteredPosts = Post::with('user');
-                        // we may need to add School filter
-                        // Class filter
-                        // User Filter
-                        // And company filter
-                        // Obviously should be allowed to change status and later down
-                        // the road should be able to control classes
-                    break;
-                case 2: // Supervisor
-                    // Retrieve the company UUID based on the supervisor's UUID
-                    $companyUuid = Company::with('supervisors')
-                        ->where('uuid', $user->company_uuid) // Change this to 'uuid'
-                        ->first();
-                        
-                         if ($request->has('class_id')) {
-                        $selectedClassId = $request->input('class_id');
-                        if ($selectedClassId) {
-                            $filteredPosts->where('class_id', $selectedClassId);
-                        }
-                    }
-                    if ($request->has('user_uuid')) {
-                        $selectedUserId = $request->input('user_uuid');
-                        if ($selectedUserId) {
-                            $filteredPosts->where('user_uuid', $selectedUserId);
-                        }
-                    }
-
-
-                    // Now you can use $companyUuid to filter the posts
-                    $filteredPosts->where('company_id', $companyUuid->uuid); // Change this to 'company_uuid'
-
-                    break;
-
-                case 3: //Teacher
-
-                    if ($request->has('class_id')) {
-                        $selectedClassId = $request->input('class_id');
-                        if ($selectedClassId) {
-                            $filteredPosts->where('class_id', $selectedClassId);
-                        }
-                    }
-                    if ($request->has('user_uuid')) {
-                        $selectedUserId = $request->input('user_uuid');
-                        if ($selectedUserId) {
-                            $filteredPosts->where('user_uuid', $selectedUserId);
-                        }
-                    }
-                        // Potential of having Change of status
-                    break;
-                case 4: //Student
-                    $filteredPosts->where('user_uuid', $user->uuid);
-                    // Unsure of what filters are needed. Probably will have to change the date
-                    // filter to eventually include weeks instead of days
-                    break;
-            }
-
-            if ($request->has('weeks')) {
-                $weeks = $request->input('weeks');
-                $filteredPosts->whereDate('created_at', '>=', now()->subWeeks($weeks));
-            }
-
-            // ... Global Filter methods
-
-
-            $perPage = $request->input('per_page', 5); // Default per page is 5
-            $paginatedPosts = $filteredPosts->orderByDesc('created_at')->paginate($perPage);
-
-
-            $transformedPosts = $paginatedPosts->getCollection()->map(function ($post) use ($user, $role) {
-                // Transform the post as needed
-                return $post;
-            });
-
-            return response()->json([
-                'filteredPosts' => $transformedPosts,
-                'pagination' => [
-                    'current_page' => $paginatedPosts->currentPage(),
-                    'last_page' => $paginatedPosts->lastPage(),
-                    'per_page' => $paginatedPosts->perPage(),
-                    'total' => $paginatedPosts->total(),
-                ],
-            ]);
-
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Failed to authenticate.'], 401);
+        // Filter posts by 'user' parameter if provided
+        if ($userParam) {
+            $filteredPosts->where('user_uuid', $userParam);
         }
+
+        // Filter posts by 'class' parameter if provided
+        if ($classParam) {
+            $filteredPosts->where('class_id', $classParam);
+        }
+
+        // ... Global Filter methods
+
+        $perPage = $request->input('per_page', 5); // Default per page is 5
+        $paginatedPosts = $filteredPosts->orderByDesc('created_at')->paginate($perPage);
+
+        $transformedPosts = $paginatedPosts->getCollection()->map(function ($post) use ($user, $role) {
+            // Transform the post as needed
+            return $post;
+        });
+
+        return response()->json([
+            'filteredPosts' => $transformedPosts,
+            'pagination' => [
+                'current_page' => $paginatedPosts->currentPage(),
+                'last_page' => $paginatedPosts->lastPage(),
+                'per_page' => $paginatedPosts->perPage(),
+                'total' => $paginatedPosts->total(),
+            ],
+            'classes' => $classIds // Use the classIds value here
+        ]);
+    } catch (JWTException $e) {
+        return response()->json(['error' => 'Failed to authenticate.'], 401);
     }
+}
+
 
     function getAttendanceStatus(Request $request)
     {

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
+import "./Charts.css";
 
 interface DoughnutChartProps {
   approvedUsers: User[];
@@ -33,6 +34,14 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
       // Create a new doughnut chart
       myChartRef.current = new Chart(ctx, {
         type: "doughnut",
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+            },
+          },
+        },
         data: {
           labels: ["Approved", "Rejected", "Pending"],
           datasets: [
@@ -58,14 +67,8 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
   }, [approvedUsers, rejectedUsers, pendingUsers]);
 
   return (
-    <div style={{ width: "200px" }}>
-      <canvas
-        ref={chartRef}
-        style={{
-          height: "100%",
-          width: "100%",
-        }}
-      ></canvas>
+    <div className="w-100">
+      <canvas id="myChart" ref={chartRef}></canvas>
     </div>
   );
 };

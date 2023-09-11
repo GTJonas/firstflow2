@@ -129,40 +129,24 @@ const fetchAndProcessUserData = async (token) => {
   }
 };
 
-export const updateUserProfile = async (formData) => {
-  const token = localStorage.getItem("token");
-  const userUuid = jwtDecode(token).sub;
-
+export const updateProfile = async (formData) => {
   const apiUrls = await fetchApiUrls();
+  const url = apiUrls[3];
 
   try {
-    const url = apiUrls[3];
-    // Update user profile on the server
     const response = await axios.post(`${url}`, formData, {
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        "Content-Type": "multipart/form-data", // Important for image upload
+      },
     });
-
-    if (response.status === 200) {
-      const url = apiUrls[2];
-      // Fetch updated user data
-      const userResponse = await axios.get(`${url}/${userUuid}`);
-      const updatedUser = userResponse.data;
-
-      // Update encrypted user data in localStorage
-      const encryptedUserData = encryptData(JSON.stringify(updatedUser));
-      localStorage.setItem("userData", encryptedUserData);
-
-      return { success: true, user: updatedUser };
-    } else {
-      return { success: false, error: "Failed to update profile" };
-    }
+    return response; // Make sure to return the data from the response.
   } catch (error) {
-    console.error("Error updating user profile:", error);
-    return { success: false, error: "An error occurred during profile update" };
+    throw error; // Rethrow the error to handle it in the component.
   }
 };
 
-const userByRoles = async () => {
+export const userByRoles = async () => {
   const apiUrls = await fetchApiUrls();
   const url = apiUrls[4];
 
@@ -177,7 +161,7 @@ const userByRoles = async () => {
 };
 
 // Encrypt data using your encryption method
-const encryptData = (data: string) => {
+export const encryptData = (data: string) => {
   const secretKey = "123456"; // Replace with your secret key
   const encryptedData = CryptoJS.AES.encrypt(data, secretKey).toString();
   return encryptedData;

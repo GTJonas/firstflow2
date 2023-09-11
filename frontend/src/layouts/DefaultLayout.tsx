@@ -98,6 +98,8 @@ const DefaultLayout: React.FC = () => {
   };
   const decodedToken = jwtDecode(token) as DecodedToken;
 
+  console.log(user);
+
   return (
     <div className="main">
       <Remainingtime />

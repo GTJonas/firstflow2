@@ -153,7 +153,7 @@ const ShowOwnSchoolClass = () => {
   };
 
   return (
-    <div>
+    <div className="bg-white p-4 rounded">
       {Array.isArray(classDetailsList) &&
         classDetailsList.map((classDetails, classIndex) => (
           <div key={classIndex}>

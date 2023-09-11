@@ -57,28 +57,33 @@ const Stats = () => {
           <p>Loading attendance data...</p>
         ) : (
           <>
-            <div>
-              <DoughnutChart
-                approvedUsers={approvedUsers}
-                rejectedUsers={rejectedUsers}
-                pendingUsers={pendingUsers}
-              />
+            <div className="container-fluid mb-4 p-4 bg-white rounded ">
+              <div className="row">
+                <div className="w-50">
+                  <DoughnutChart
+                    approvedUsers={approvedUsers}
+                    rejectedUsers={rejectedUsers}
+                    pendingUsers={pendingUsers}
+                  />
+                </div>
+                <div className="w-50 d-flex flex-column justify-content-center align-items-center ">
+                  {pendingUsers.length !== 0 && (
+                    <h2>
+                      Pending: {pendingUsers.length} /{" "}
+                      {totalStudentsCount -
+                        approvedUsers.length -
+                        rejectedUsers.length}
+                    </h2>
+                  )}
+                  <h2>
+                    Approved: {approvedUsers.length} / {totalStudentsCount}
+                  </h2>
+                  <h2>
+                    Rejected: {rejectedUsers.length} / {totalStudentsCount}
+                  </h2>
+                </div>
+              </div>
             </div>
-
-            {pendingUsers.length !== 0 && (
-              <h2>
-                Pending: {pendingUsers.length} /{" "}
-                {totalStudentsCount -
-                  approvedUsers.length -
-                  rejectedUsers.length}
-              </h2>
-            )}
-            <h2>
-              Approved: {approvedUsers.length} / {totalStudentsCount}
-            </h2>
-            <h2>
-              Rejected: {rejectedUsers.length} / {totalStudentsCount}
-            </h2>
           </>
         )}
       </div>

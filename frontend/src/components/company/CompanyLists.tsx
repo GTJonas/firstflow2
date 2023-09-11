@@ -84,7 +84,7 @@ function CompanyLists() {
   }, [searchQuery]);
 
   return (
-    <div>
+    <div className="bg-white p-4">
       <h1>Company Profiles</h1>
       <form>
         <input

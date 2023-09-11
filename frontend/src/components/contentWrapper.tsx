@@ -11,7 +11,7 @@ import Company from "../views/Company.tsx";
 import FilteredPosts from "./posts/filteredPosts/FilteredPosts.tsx";
 import { useLocation } from "react-router-dom";
 import CompanyLists from "./company/CompanyLists.tsx";
-import ProfileUpdatePage from "../views/settings/ProfileUpdatePage.tsx";
+import ChangeProfile from "./settings/ChangeProfile.tsx";
 
 function ContentWrapper({ user }: { user: any }) {
   const Url = window.location.pathname.toLowerCase();
@@ -41,7 +41,7 @@ function ContentWrapper({ user }: { user: any }) {
 
   switch (Url) {
     case "/settings":
-      content = <ProfileUpdatePage />;
+      content = <ChangeProfile user={user} />;
       if (!logShown) {
         console.log("This is the settings view");
         setLogShown(true);

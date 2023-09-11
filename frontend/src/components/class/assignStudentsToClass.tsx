@@ -103,7 +103,7 @@ const AssignStudentsToClass = () => {
   };
 
   return (
-    <div className="post" style={{ height: "1000px" }}>
+    <div className="post  bg-white " style={{ height: "1000px" }}>
       <h2>Assign Students to Class</h2>
       <div>
         <label>Select Class:</label>

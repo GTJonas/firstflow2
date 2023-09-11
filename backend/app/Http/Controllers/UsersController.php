@@ -85,14 +85,17 @@ class UsersController extends Controller
         // Update the user information
         $user->update($validatedData);
 
-        $storagePath = 'http://194.71.0.30:8000/storage/';
+        $serverHost = $_SERVER['HTTP_HOST'];
+
+        $storagePath = $serverHost;
+        
 
         // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {
             $profilePicture = $request->file('profile_picture');
             $imageName = $user->uuid . '.' . $profilePicture->getClientOriginalExtension();
             $imagePath = $profilePicture->storeAs('public/user-profiles', $imageName); // Store in the "public" disk under the "user-profiles" directory
-            $user->update(['profile_picture' => $storagePath . 'storage/user-profiles/' . $imageName]);
+            $user->update(['profile_picture' => $storagePath . '/storage/user-profiles/' . $imageName]);
         }
 
         // Return the updated user data along with the success message

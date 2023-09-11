@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import getAuthHeaders from "../api/getAuthHeaders.tsx";
+import defaultimage from "../assets/default.png";
+import { useHistory, Link } from "react-router-dom"; // Import useHistory
 
 function RightSidebar({ user }) {
   const [classes, setClasses] = useState([]);
@@ -45,16 +47,16 @@ function RightSidebar({ user }) {
     switch (roleID) {
       case 1:
         return (
-          <>
+          <div className="rightsidebar">
             <p>Admin</p>
             <p>Placeholder</p>
             {/* Admin-specific content */}
-          </>
+          </div>
         );
 
       case 2: // Supervisor
         return (
-          <>
+          <div>
             <h2>Teachers</h2>
             {classes.length > 0 ? (
               <ul>
@@ -100,66 +102,65 @@ function RightSidebar({ user }) {
                 {classes
                   .flatMap((classItem) => classItem.students)
                   .map((student) => (
-                    <li key={student.uuid}>
-                      <img
-                        src={student.profile_picture}
-                        className="rounded-circle"
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                        }}
-                        alt="Student Profile"
-                      />
-                      <p>
-                        {student.first_name} {student.last_name} -{" "}
-                        {student.classname}
-                      </p>
-                    </li>
+                    <Link to={`/?user=${student.uuid}`}>
+                      <li key={student.uuid}>
+                        <img
+                          src={
+                            student.profile_picture
+                              ? student.profile_picture
+                              : defaultimage
+                          }
+                          className="rounded-circle profile"
+                          alt="Student Profile"
+                        />
+                        <p>
+                          {student.first_name} {student.last_name} -{" "}
+                          {student.classname}
+                        </p>
+                      </li>
+                    </Link>
                   ))}
               </ul>
             ) : (
               <p>No students available.</p>
             )}
-          </>
+          </div>
         );
 
       case 3: // Teacher
         return (
-          <>
+          <div className="">
             <h2>Your Classes</h2>
             {classes.length > 0 ? (
               <ul>
                 {classes.map((classItem) => (
                   <li key={classItem.classid}>
-                    <p>Class Name: {classItem.classname}</p>
-                    {/*
-                                        <p>
-                                            Teacher:
-                                            <img
-                                                src={classItem.teacher.profile_picture}
-                                                className="rounded-circle"
-                                                style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                                                alt="Teacher Profile"
-                                            />
-                                            {classItem.teacher.first_name} {classItem.teacher.last_name}
-                                        </p>
-                                        */}
+                    {/* Create dynamic links for teachers */}
+                    <Link to={`/?class=${classItem.classid}`}>
+                      <h4>Class Name: {classItem.classname}</h4>
+                    </Link>
+                    {/* Rest of the content */}
                     <p>Students:</p>
                     <ul>
                       {classItem.students.map((student) => (
                         <li key={student.uuid}>
-                          <img
-                            src={student.profile_picture}
-                            className="rounded-circle"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                            }}
-                            alt="Student Profile"
-                          />
-                          {student.first_name} {student.last_name}
+                          <Link
+                            to={`/?class=${classItem.classid}&user=${student.uuid}`}
+                          >
+                            <div className="profile p-2">
+                              <img
+                                src={
+                                  student.profile_picture
+                                    ? student.profile_picture
+                                    : defaultimage
+                                }
+                                className="rounded-circle mr-2"
+                              />
+                              <div className="p-4">
+                                {student.first_name} {student.last_name}
+                              </div>
+                            </div>
+                          </Link>
                         </li>
                       ))}
                     </ul>
@@ -169,12 +170,12 @@ function RightSidebar({ user }) {
             ) : (
               <p>No classes available.</p>
             )}
-          </>
+          </div>
         );
 
       case 4: // Student
         return (
-          <>
+          <div className="rightsidebar">
             <h2>Din klass</h2>
             {classes.length > 0 ? (
               <ul>
@@ -219,7 +220,7 @@ function RightSidebar({ user }) {
             ) : (
               <p>No classes available.</p>
             )}
-          </>
+          </div>
         );
 
       default:
@@ -227,7 +228,7 @@ function RightSidebar({ user }) {
     }
   };
 
-  return <div className="Sidebar">{renderRoleContent()}</div>;
+  return <div className="Sidebar  p-3">{renderRoleContent()}</div>;
 }
 
 export default RightSidebar;

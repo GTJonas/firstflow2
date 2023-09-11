@@ -1,75 +1,24 @@
-/* Styles for screens between 1025px and 1440px wide (larger laptops and smaller desktops) */
-
-@media (min-width: 1025px) and (max-width: 1440px) {
-    /* Right sidebar */
-
-
-    .Sidebar {
-        min-width: 20vw;
-        flex-grow: 1;
-    }
-    .Klass {
-        font-size: 36px;
-        height: 174px;
-        display: flex;
-        align-items: center;
-        padding-left: 5%;
-    }
-
-    .students {
-        padding-left: 5%;
-        display: flex;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        padding-top: 15px;
-        gap: 5px;
-    }
-
-    .students li {
-        list-style: none;
-    }
-    .students ul {
-        margin: 0;
-        padding: 0;
-    }
-    .user span {
-        margin-left: 5px;
-    }
+/* Right sidebar */
+.Sidebar {
+  background-color: #2b3034;
+  color: white;
 }
-/* Styles for screens larger than 1440px wide (large desktops and beyond) */
-@media (min-width: 1441px) {
-    /* Right sidebar */
-
-
-    .Sidebar {
-        flex-grow: 2;
-        min-width: 19.7vw;
-    }
-    .Klass {
-        font-size: 36px;
-        height: 174px;
-        display: flex;
-        align-items: center;
-        padding-left: 5%;
-    }
-
-    .students {
-        padding-left: 5%;
-        display: flex;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        padding-top: 15px;
-        gap: 5px;
-    }
-
-    .students li {
-        list-style: none;
-    }
-    .students ul {
-        margin: 0;
-        padding: 0;
-    }
-    .user span {
-    margin-left: 5px;
-    }
+.Sidebar li {
+  list-style: none;
+}
+.Sidebar a {
+  text-decoration: none;
+  color: white;
+}
+.Sidebar .profile img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+.Sidebar .profile {
+  display: flex;
+  justify-content: start;
+  flex-direction: row;
+  align-items: center;
+  font-size: 14px;
 }
