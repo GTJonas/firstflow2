@@ -5,13 +5,18 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
 import ErrorBoundary from "./ErrorBoundary.tsx";
+import { UserProvider } from "./Context/userContext.tsx";
+import { PostProvider } from "./Context/postContext.tsx";
+/*
 import DefaultLayout from "./layouts/DefaultLayout.tsx";
 import GuestLayout from "./layouts/GuestLayout.tsx";
-import { UserProvider } from "./functions/contexts/userContext.tsx";
-import { PostProvider } from "./functions/contexts/postContext.tsx";
+
 import { useFetchData1 } from "./api/api.tsx";
 import getAuthHeaders from "./api/getAuthHeaders.tsx";
+
+*/
 
 const defaultPaths = [
   "/",

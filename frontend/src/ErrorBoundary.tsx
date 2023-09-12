@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Navigate } from 'react-router-dom';
-
 
 class ErrorBoundary extends Component {
     constructor(props) {
         super(props);
         this.state = {
             hasError: false,
-            reloadCountdown: 60 // Initial countdown value
+            reloadCountdown: this.props.countdown || 60, // Use prop or default to 60
         };
     }
 
@@ -29,7 +27,7 @@ class ErrorBoundary extends Component {
                 reloadCountdown: prevState.reloadCountdown - 1
             }));
 
-            if (this.state.reloadCountdown === 1) {
+            if (this.state.reloadCountdown === 0) {
                 clearInterval(countdownInterval);
                 const token = localStorage.getItem('token');
                 if (token) {
