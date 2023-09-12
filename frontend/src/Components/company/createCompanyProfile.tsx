@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import getAuthHeaders from "../../api/getAuthHeaders.tsx";
+import getAuthHeaders from "../../../frontend/src/api/getAuthHeaders.tsx";
 
 const CreateCompanyProfile = () => {
   const navigate = useNavigate();

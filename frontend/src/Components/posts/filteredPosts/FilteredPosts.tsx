@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import getAuthHeaders from "../../../api/getAuthHeaders.tsx";
+import getAuthHeaders from "../../../../frontend/src/api/getAuthHeaders.tsx";
 import "../../../assets/Icons/Icons.css";
 import PostItem from "./PostItem"; // Import your PostItem component here
 import { useLocation } from "react-router-dom";

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import getAuthHeaders from "../api/getAuthHeaders.tsx";
+import getAuthHeaders from "../../frontend/src/api/getAuthHeaders.tsx";
 import defaultimage from "../assets/default.png";
 import { useHistory, Link } from "react-router-dom"; // Import useHistory
 

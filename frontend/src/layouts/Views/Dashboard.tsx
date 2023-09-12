@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 
-import ContentWrapper from "../components/contentWrapper.tsx";
-import RightSidebar from "../components/RightSidebar.tsx";
+import ContentWrapper from "../../../../Temp/components/contentWrapper.tsx";
+import RightSidebar from "../../../../Temp/components/RightSidebar.tsx";
 import "../components/Style-modules/Dashboard-style-module.css";
 import "../components/Style-modules/RightSidebar-module.css";
 

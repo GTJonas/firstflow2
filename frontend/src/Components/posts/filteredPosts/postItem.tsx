@@ -1,6 +1,6 @@
 import TimeDifference from "./timeDifference.tsx";
 import axios from "axios";
-import getAuthHeaders from "../../../api/getAuthHeaders.tsx";
+import getAuthHeaders from "../../../../frontend/src/api/getAuthHeaders.tsx";
 
 const API_BASE_URL = "http://194.71.0.30:8000/api"; // Change to your API URL
 

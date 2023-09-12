@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import getAuthHeaders from "../../api/getAuthHeaders";
+import getAuthHeaders from "../../../frontend/src/api/getAuthHeaders";
 import DoughnutChart from "../../Charts/UserattendanceChart";
 
 const Stats = () => {

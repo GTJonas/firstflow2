@@ -1,4 +1,4 @@
-import { userByRoles } from "../../api/api.tsx";
+import { userByRoles } from "../../../frontend/src/api/api.tsx";
 import React, { useEffect, useState } from "react";
 
 const SimilarComponent = () => {

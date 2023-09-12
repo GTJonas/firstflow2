@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MenuItem from "../MenuItem.tsx";
-import getAuthHeaders from "../../../api/getAuthHeaders.tsx";
+import getAuthHeaders from "../../../../frontend/src/api/getAuthHeaders.tsx";
 import axios from "axios";
 
 const List2Menu = () => {

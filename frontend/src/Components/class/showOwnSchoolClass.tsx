@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import getAuthHeaders from "../../api/getAuthHeaders.tsx";
+import getAuthHeaders from "../../../frontend/src/api/getAuthHeaders.tsx";
 
 const ShowOwnSchoolClass = () => {
   const [classDetailsList, setClassDetailsList] = useState([]);

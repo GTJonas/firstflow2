@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import createClass from "../../api/createClass.tsx";
+import createClass from "../../../frontend/src/api/createClass.tsx";
 
 const CreateClassPage = () => {
   const [className, setClassName] = useState("");

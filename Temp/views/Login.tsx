@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Logout from "../components/Logout.tsx";
-import { useLogin } from "../api/api.tsx";
+import { useLogin } from "../../frontend/src/api/api.tsx";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = ({ user }) => {
